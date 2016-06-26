@@ -1,0 +1,152 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\title{MCS Project 3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,10pt]{IEEEtran}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{subcaption}
+%\usepackage{subfigure}
+%\usepackage{stfloats}
+%\usepackage{array}
+%\usepackage{cite}
+\usepackage{nomencl}
+\usepackage{amsmath}
+\usepackage{siunitx}
+%\usepackage{gensymb}	% for the degree symbol
+\usepackage{listings} 	% \lstinline[]|<code>|
+\lstset{language=[ANSI]C}
+\usepackage{placeins}	% adds \FloatBarrier option
+\usepackage{float}		% adds [H] option for floats
+\usepackage{mathtools}	% for \DeclarePairedDelimiter
+%\usepackage{titling}
+
+%++++++++++++++++++++++++++++++++++++++++++++++++++++++
+%\input epsf
+%\interdisplaylinepenalty=2500
+%\DeclareRobustCommand*{\IEEEauthorrefmark}[1]{%
+%  \raisebox{0pt}[0pt][0pt]{\textsuperscript{\footnotesize\ensuremath{#1}}}}
+\hyphenation{MacBook} % correct bad hyphenation here
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+% --------------------------------------------------------------
+%                         Document
+% --------------------------------------------------------------
+
+\begin{document}
+	
+	\title{Simulation of a Three Dimensional Heat Transfer}
+	\author{Edmond Shehadi$^{*}$% <-this % stops a space
+		\thanks{$^{*}$Computational Science, Department of Information Technology, Uppsala University}%
+	}
+	\markboth{Heat Transfer in 3D}{}
+	\maketitle
+	
+	\begin{abstract}
+		In this paper, a close-up step-by-step investigation into a three dimensional heat transfer model will be deployed. This model will initiate from a simple configuration and evolve until reaching flexible portability and efficient implementation. So far, the main purpose out of all this is to build essential and valuable knowledge in a tutorial fashion for later professional development and incorporation into large-scale projects.
+	\end{abstract}
+	
+	\begin{IEEEkeywords}
+		one, two, three
+	\end{IEEEkeywords}
+	
+	\section{Introduction}
+	\IEEEPARstart{H}eat transfer is a phenomena that is constantly happening around us. It shapes our thinking and the way we tackle problems -- especially through engineering applications. The term heat transfer, an energy flow process, refers to the exchange of thermal energy between physical systems. Naturally, heat, a form of energy, only flows from systems with higher energy potential (higher temperature) to others with lower energy potential (lower temperature) -- hence satisfying the second law of thermodynamics. More specifically, heat transfer, in principle, occurs in three different forms: conduction, convection and radiation and is usually dependent on the surrounding medium.
+	\subsection{Conduction}
+	The process of conduction occurs only when physical bodies are in contact with one another. On a micro-scale, and in order to grasp an understanding on how conduction works, the atoms vibrate rapidly against their neighboring atoms (and hence physical contact is satisfied). Consequently, it is of no surprise then that this phenomena is more interesting and dominant in solids due to denser atoms in a given space as opposed to fluids and gases.
+	\subsection{Convection}
+	The process of convection occurs when one or more fluid affect the heating process due to movement. This form of heat transfer is mostly present in liquids and gases. Usually there are two means of heat transfer through convection: forced and natural. The first is artificial and forced into existence, an example would be heat exchangers. The latter is done so naturally, without any man-made interference, such as the cooling of a hot item in a cool environment (by itself). 
+	\subsection{Radiation}
+	The process of radiation occurs between bodies that are not in contact with one another yet have a connection in their photon flight path. This form of heat transfer, unlike the other two, can occur in vacuum as well as any transparent medium. The only requirement for it to happen is the availability of either transmittance or absorption of photons traveling in electromagnetic waves. 
+	% description about the importance of heat transfer 
+	
+	% uses of heat transfer (examples)
+	
+	% aim of this paper 
+	
+	\section{Model Description}
+	
+	\section{Methodology}
+	The first checkpoint in this paper is about implementing a fully functional conductive model in a given unit cube. To achieve this, consider the below general expression.
+	\begin{equation}
+		c\rho\frac{\partial T}{\partial t} = K_c \Bigg[ \frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} + \frac{\partial^2 T}{\partial z^2} \Bigg] + \dot{Q}_{gen}
+	\end{equation}
+	where $T$ is the temperature ($T: K$), $c$ is the specific heat ($c: \frac{J}{K.kg}$), $\rho$ is the mass density ($\rho: \frac{kg}{m^3}$), $\dot{Q}_{gen}$ is the heat generation ($\dot{Q}_{gen}: \frac{W}{m^3}$), $K_c$ is the thermal conductivity and the relation between thermal conductivity ($K_c: \frac{W}{K.m}$) and thermal diffusivity is: $k_d = \frac{K_c}{c\rho}$ with units ($k_d: \frac{m^2}{s}$).
+	
+	To complement this model, boundary conditions that employ the two remaining categories of heat transfer, convection and radiation, are considered. Thus the expression for the boundary nodes becomes:
+	\begin{equation}
+		-k\frac{\partial T}{\partial x}\Bigg |_{BC} = hA(T_{s} - T_{surr})+\sigma \epsilon (T_s^4 - T_{surr}^4)
+	\end{equation}
+	where $T_s$ is the surface temperature ($T_s: K$), $T_{surr}$ is the surrounding temperature ($T_{surr}: K$), $h$ is the convection heat transfer coefficient ($h: \frac{W}{m^2.K}$), $A$ is the area undergoing convection ($A: m^2$), $\sigma$ is the Stefan-Boltzmann coefficient ($\sigma: \frac{W}{m^2.K^4}$) and $\epsilon$ is the emissivity ratio and is accordingly unitless.
+	
+	Nonetheless, the convection and radiation terms are left out for later boundary conditions. The resulting final expression becomes:
+	\begin{equation}
+		k_d\Bigg[ \frac{\partial^2 T}{\partial x^2}+\frac{\partial^2 T}{\partial y^2}+\frac{\partial^2 T}{\partial z^2} \Bigg] + \frac{\dot{Q}_{gen}}{c\rho} = \frac{\partial T}{\partial t}
+	\end{equation}
+	\subsection{Explicit Scheme}
+	Now in order to initiate the numerical procedure, a 7-point stencil and with a second order central difference scheme was adopted. The above analytical expression translates numerically into:
+	\begin{multline}
+		k_d\frac{\partial^2 T}{\partial x^2}=k_d\frac{T_{i-1,j,k}^n-2T_{i,j,k}^n+T_{i+1,j,k}^n}{\delta x^2}\\ 
+		k_d\frac{\partial^2 T}{\partial y^2}=k_d\frac{T_{i,j-1,k}^n-2T_{i,j,k}^n+T_{i,j+1,k}^n}{\delta y^2}\\
+		\qquad \qquad \qquad k_d\frac{\partial^2 T}{\partial z^2}=k_d\frac{T_{i,j,k-1}^n-2T_{i,j,k}^n+T_{i,j,k+1}^n}{\delta z^2}\\
+		\frac{\partial T}{\partial t} = \frac{T_{i,j,k}^{n+1}-T_{i,j,k}^{n}}{\delta t}
+	\end{multline}
+	with $\delta x,\ \delta y,\ \delta z,\ \delta t$ being the discretized step sizes spatially in the x, y and z direction and temporally in time. 
+	
+	The next step is to take the above expression and rearrange it in order to solve for the next value in time while integrating a general parameter. This general parameter, $f_{i,j,k}$, that takes care of both boundary and heat generation conditions with respect to their locations. 
+	\begin{multline}
+		T_{i,j,k}^{n+1} = C_x\Big( T_{i-1,j,k}^n+T_{i+1,j,k}^n \Big)\\ 
+		+ C_y \Big( T_{i,j-1,k}^n+T_{i,j+1,k}^n \Big) \qquad \qquad \qquad \\
+		 + C_z \Big( T_{i,j,k-1}^n+T_{i,j,k+1}^n \Big)\\ 
+		+ \Big( 1 - C_c \Big).T_{i,j,k}^n + \delta t.f_{i,j,k}^n \quad
+	\end{multline}
+	where the coefficients $C_x$, $C_y$, $C_z$ and $C_c$ are constants denoting the terms related to the x-axis, y-axis, z-axis and the center of the finite difference kernel, respectively. Their actual values are:
+	$$C_x = \frac{k_d}{\delta x^2} \delta t$$
+	$$C_y =  \frac{k_d}{\delta y^2} \delta t$$
+	$$C_z = \frac{k_d}{\delta z^2} \delta t$$
+	$$C_c = 2.k_d\Big( \frac{1}{\delta x^2}+\frac{1}{\delta y^2}+\frac{1}{\delta z^2} \Big)\delta t$$
+	Next is to consider boundary conditions. The below is a an example of top surface (inner grid) boundary implementation -- only one side will be considered for the sake of brevity. 
+	$$\dot{q}_{cond}\Big |_{BC} = \dot{q}_{conv}$$
+	$$-k_d.A_{yz} \frac{\partial T}{\partial x} -k_d.A_{xz} \frac{\partial T}{\partial y} - k_d.A_{xy} \frac{\partial T}{\partial z} = h.A_s\partial T $$
+	\begin{multline}
+	-k_d \frac{T_{i,j,k}-T_{i-1,j,k}}{\delta x}\delta y \frac{\delta z}{2}\\
+	-k_d \frac{T_{i,j,k}-T_{i+1,j,k}}{\delta x}\delta y \frac{\delta z}{2} \qquad \qquad \qquad \qquad\\
+	-k_d \frac{T_{i,j,k}-T_{i,j-1,k}}{\delta y}\delta x \frac{\delta z}{2} \qquad \qquad \qquad\\
+	-k_d \frac{T_{i,j,k}-T_{i,j+1,k}}{\delta y}\delta x \frac{\delta z}{2} \qquad \qquad \\
+	-k_d \frac{T_{i,j,k}-T_{i,j,k-1}}{\delta z}\delta x \delta y \qquad \\
+	 = \frac{1}{c\rho}h.( T_{i,j,k}-T_{\infty})\delta x \delta y \quad \qquad
+	\end{multline}
+	Rearranging the terms, the value of $T_{i,j,N_z}$ becomes,
+	\begin{multline}
+	T_{i,j,N_z} = \frac{1}{C_c'}\Big[ C_x'\Big(T_{i-1,j,N_z}+T_{i+1,j,N_z}\Big)\\
+	\qquad \quad+C_y'\Big(T_{i,j-1,N_z}+T_{i,j+1,N_z} \Big)\\
+	+C_z'T_{i,j,N_z-1}+C_s'T_{\infty}\Big] 
+	\end{multline}
+	with the Coefficients, 
+	$$C_c'=\frac{h}{c\rho}\delta x \delta y + k_d \frac{\delta y \delta z}{\delta x} + k_d \frac{\delta x \delta z}{\delta y} + k_d \frac{\delta x \delta y}{\delta z}  $$
+	$$C_x'=k_d \frac{\delta y \delta z}{2\delta x} $$ 
+	$$C_y'=k_d \frac{\delta x \delta z}{2\delta y} $$
+	$$C_z'=k_d \frac{\delta x \delta y}{\delta z} $$
+	$$C_s'= \frac{h}{c\rho}\delta x \delta y $$ 
+	Similarly follows the rest of the five boundary sides.
+	
+	However one very important delimitation while using such a scheme would be meeting the CFL (Courant-Friedrichs-Lewy) condition criteria. Since this is an explicit scheme, the time steps taken should be relatively, and ridiculously, smaller with respect to the space discretization. 
+	
+	
+	 
+	
+	\section{Results}
+	
+	\section{Discussion}
+	% a section about accuracy, convergence and stability done analytically, and maybe a comparison with the numerical results ?
+	\section{Future Work}
+	
+	% flexibility of geometry, solver, parallelization... etc.
+	
+	\begin{thebibliography}{1}
+		\bibitem{name of article} % article description...
+		
+	\end{thebibliography}
+\end{document}

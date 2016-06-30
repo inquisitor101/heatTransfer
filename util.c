@@ -207,7 +207,13 @@ void boundary(void)
 }
 
 
-void allCorners(int corner)
+void allCorners(
+                char isConv_S, double hs, double Ts, // convection south -side
+                char isConv_N, double hn, double Tn, // convection north -side
+                char isConv_W, double hw, double Tw, // convection west  -side
+                char isConv_E, double he, double Te, // convection east  -side
+                char isConv_T, double ht, double Tt, // convection top   -side
+                char isConv_B, double hb, double Tb) // convection bottom-side
 {
   /*
     stencil kernel:
@@ -246,51 +252,40 @@ void allCorners(int corner)
   //  @TODO:
   //        add convection -- radiation ? -- too
   int i, j, k, kc, kw, ke, kn, ks, kt, kb;
+  double Ccp, Cxp, Cyp, Czp, Csp;
+  double Coef_ij, Coef_ik, Coef_jk, conv_ij, conv_ik, conv_jk;
 
-#define A 0 // front side
-#define B 1 // front side
-#define C 2 // front side
-#define D 3 // front side
-#define E 4 // back side
-#define F 5 // back side
-#define G 6 // back side
-#define H 7 // back side
+  assert( isConv_S == 0 || isConv_S == 1 );
+  assert( isConv_N == 0 || isConv_N == 1 );
+  assert( isConv_W == 0 || isConv_W == 1 );
+  assert( isConv_E == 0 || isConv_E == 1 );
+  assert( isConv_T == 0 || isConv_T == 1 );
+  assert( isConv_B == 0 || isConv_B == 1 );
 
-  switch(corner){
+  Coef_ij = (dx/2)*(dy/2)/(Ch*rho); // convection constant for ij-plane
+  Coef_ik = (dx/2)*(dz/2)/(Ch/rho); // convection constant for ik-plane
+  Coef_jk = (dy/x)*(dz/2)/(Ch*rho); // convection constant for jk-plane
 
-    case A:
-      
-      break;
+// kc = Nx*Ny*k+j*Nx+i;
+// kt = kc+Nx*Ny; kb = kc-Nx*Ny;
+// ks = kc+Nx;    kn = kc-Nx;
+// ke = kc+1;     kw = kc-1;
 
-    case B:
+  // corner A
 
-      break;
+  // corner B
 
-    case C:
+  // corner C
 
-      break;
+  // corner D
 
-    case D:
+  // corner E
 
-      break;
+  // corner F
 
-    case E:
+  // corner G
 
-      break;
-
-    case F:
-
-      break;
-
-    case G:
-
-      break;
-
-    case H:
-
-      break;
-
-    default:
+  // corner H
 
   }
 

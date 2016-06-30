@@ -187,16 +187,167 @@ void boundary(void)
   insulated(0, 1); // plane _| i (0), j (1), k(2)
   insulated(0, 2); // plane _| i (0), j (1), k(2)
 
-  convective(Nx-1, 0, h, Tsurr); // plane _| i (0), j (1), k(2)
-  convective(Ny-1, 1, h, Tsurr); // plane _| i (0), j (1), k(2)
+  // convective(Nx-1, 0, h, Tsurr); // plane _| i (0), j (1), k(2)
+  // convective(Ny-1, 1, h, Tsurr); // plane _| i (0), j (1), k(2)
   convective(Nz-1, 2, h, Tsurr); // plane _| i (0), j (1), k(2)
 
   // @TODO:
-  //       fixed bounary as a function
-  //       corner + vertices function
+  //       fixed boundary as a function
+  Dirichlet(Nx-1, 0, 200.0);
+  Dirichlet(Ny-1, 1, 150.0);
+
+  // @TODO:
+  //       corner function
+
+  // @TODO:
+  //       vertices function
 
   // @IDEA:
   //       radiation function
+}
+
+
+void allCorners(int corner)
+{
+  /*
+    stencil kernel:
+
+                               (T)   (N)
+                                |   /
+                                | /
+                     (W) ------ O ------ (E)
+                              / |
+                            /   |
+                         (S)   (B)
+
+    T: top     B: bottom
+    N: north   S: south
+    W: west    E: east
+
+    corner diagram:
+
+                          G--------H
+                        / |      / |
+                      /   |    /   |    <== (BACK)
+                     C----|---D    |
+                     |    E---|----F
+      (FRONT) ==>    |   /    |   /
+                     | /      | /
+                     A--------B
+  letter code:
+
+    A: front, left-bottom   B: front, right-bottom
+    C: front, left-top      D: front, right-top
+    E: back, left-bottom    F: back, right-bottom
+    G: back, left-top       H: back, right-top
+
+  */
+
+  //  @TODO:
+  //        add convection -- radiation ? -- too
+  int i, j, k, kc, kw, ke, kn, ks, kt, kb;
+
+#define A 0 // front side
+#define B 1 // front side
+#define C 2 // front side
+#define D 3 // front side
+#define E 4 // back side
+#define F 5 // back side
+#define G 6 // back side
+#define H 7 // back side
+
+  switch(corner){
+
+    case A:
+      
+      break;
+
+    case B:
+
+      break;
+
+    case C:
+
+      break;
+
+    case D:
+
+      break;
+
+    case E:
+
+      break;
+
+    case F:
+
+      break;
+
+    case G:
+
+      break;
+
+    case H:
+
+      break;
+
+    default:
+
+  }
+
+}
+
+
+void Dirichlet(int fix, int plane, double value)
+{
+  int i, j, k, kc;
+
+#define X 0 //  plane perpendicular to i-axis
+#define Y 1 //  plane perpendicular to j-axis
+#define Z 2 //  plane perpendicular to k-axis
+
+  switch (plane) {
+
+    case X:
+      i = fix;  // at which level to fix
+      assert( i==0 || i==(Nx-1) );
+
+      for (k=1; k<Nz-1; k++){
+        for (j=1; j<Ny-1; j++){
+          kc = Nx*Ny*k+j*Nx+i;
+          M[kc] = value;
+        }
+      }
+      break;
+
+    case Y:
+      j = fix; // at which level to fix
+      assert( j==0 || j==(Ny-1) );
+
+      for (k=1; k<Nz-1; k++){
+        for (i=1; i<Nx-1; i++){
+          kc = Nx*Ny*k+j*Nx+i;
+          M[kc] = value;
+        }
+      }
+      break;
+
+    case Z:
+      k = fix; // at which level to fix
+      assert( k==0 || k==(Nz-1) );
+
+      for (j=1; j<Ny-1; j++){
+        for (i=1; i<Nx-1; i++){
+          kc = Nx*Ny*k+j*Nx+i;
+          M[kc] = value;
+        }
+      }
+      break;
+
+    default:
+      printf("\nWrong input in 'Dirichlet function' \t plane: %d\n\n", plane);
+      exit(1);
+  }
+
 }
 
 
@@ -319,8 +470,8 @@ void convective(int fix, int plane,
       break;
 
     default:
-    printf("\nWrong input in 'convective function' \t plane: %d\n\n", plane);
-    exit(1);
+      printf("\nWrong input in 'convective function' \t plane: %d\n\n", plane);
+      exit(1);
   }
 
 }

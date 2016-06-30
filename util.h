@@ -25,6 +25,8 @@ void boundary(void);
 
 void insulated(int fix, int plane);
 
+void Dirichlet(int fix, int plane, double value);
+
 void convective(int fix, int plane,
                 double h, double Tsurr);
 

@@ -30,4 +30,10 @@ void Dirichlet(int fix, int plane, double value);
 void convective(int fix, int plane,
                 double h, double Tsurr);
 
+void allCorners(char isConv_S, double hs, double Ts, // convection south -side
+                char isConv_N, double hn, double Tn, // convection north -side
+                char isConv_W, double hw, double Tw, // convection west  -side
+                char isConv_E, double he, double Te, // convection east  -side
+                char isConv_T, double ht, double Tt, // convection top   -side
+                char isConv_B, double hb, double Tb);// convection bottom-side
 #endif

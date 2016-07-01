@@ -252,8 +252,9 @@ void allCorners(
   //  @TODO:
   //        add convection -- radiation ? -- too
   int i, j, k, kc, kw, ke, kn, ks, kt, kb;
-  double Ccp, Cxp, Cyp, Czp, Csp;
-  double Coef_ij, Coef_ik, Coef_jk, conv_ij, conv_ik, conv_jk;
+  double Coef_ij, Coef_ik, Coef_jk, conv_ij, conv_ik, conv_jk, term;
+
+  double denom, cond0 = kd*( dy*dz/dx + dx*dz/dy + dx*dy/dz)/4;
 
   assert( isConv_S == 0 || isConv_S == 1 );
   assert( isConv_N == 0 || isConv_N == 1 );
@@ -264,7 +265,7 @@ void allCorners(
 
   Coef_ij = (dx/2)*(dy/2)/(Ch*rho); // convection constant for ij-plane
   Coef_ik = (dx/2)*(dz/2)/(Ch/rho); // convection constant for ik-plane
-  Coef_jk = (dy/x)*(dz/2)/(Ch*rho); // convection constant for jk-plane
+  Coef_jk = (dy/2)*(dz/2)/(Ch*rho); // convection constant for jk-plane
 
 // kc = Nx*Ny*k+j*Nx+i;
 // kt = kc+Nx*Ny; kb = kc-Nx*Ny;
@@ -272,8 +273,52 @@ void allCorners(
 // ke = kc+1;     kw = kc-1;
 
   // corner A
+  i = 0; j = Ny-1; k = 0;
+
+  kc = Nx*Ny*k+j*Nx+i;
+  kt = kc+Nx*Ny;
+  kn = kc-Nx;
+  ke = kc+1;
+
+  term  = 0.0;
+  term += (isConv_W)  ? hw*Coef_jk*Tw  : 0.0;
+  term += (isConv_B)  ? hb*Coef_ij*Tb  : 0.0;
+  term += (isConv_S)  ? hs*Coef_ik*Ts  : 0.0;
+
+  denom  = 0.0;
+  denom += (isConv_W) ? hw*Coef_jk  : 0.0;
+  denom += (isConv_B) ? hb*Coef_ij  : 0.0;
+  denom += (isConv_S) ? hs*Coef_ik  : 0.0;
+  denom += cond0;
+
+  M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
+            (kd*dx*dz/(4*dy))*M[ks] + \
+            (kd*dx*dy/(4*dz))*M[kt] + \
+            term )/denom;
 
   // corner B
+  i = Nx-1; j = Ny-1; k = 0;
+
+  kc = Nx*Ny*k+j*Nx+i;
+  kt = kc+Nx*Ny;
+  kn = kc-Nx;
+  kw = kc-1;
+
+  term = 0.0;
+  term  = (isConv_S)  ? hs*Coef_ik*Ts  : 0.0;
+  term += (isConv_E)  ? he*Coef_jk*Te  : 0.0;
+  term += (isConv_B)  ? hb*Coef_ij*Tb  : 0.0;
+
+  denom  = 0.0;
+  denom += (isConv_W) ? hw*Coef_jk  : 0.0;
+  denom += (isConv_B) ? hb*Coef_ij  : 0.0;
+  denom += (isConv_S) ? hs*Coef_ik  : 0.0;
+  denom += cond0;
+
+  M[kc] = ( (kd*dy*dz/(4*dx))*M[kw] + \
+            (kd*dx*dz/(4*dy))*M[kn] + \
+            (kd*dx*dy/(4*dz))*M[kt] + \
+            term )/denom;
 
   // corner C
 

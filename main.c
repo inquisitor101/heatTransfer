@@ -84,7 +84,7 @@ int main(int argc, char **argv){
   for (k=0; k<Nz; k++){
     for (j=0; j<Ny; j++){
       for (i=0; i<Nx; i++){
-        fprintf(f, "%2.2f,", M[Nx*Ny*k+j*Nx+i] );
+        fprintf(f, "%3.2f,", M[Nx*Ny*k+j*Nx+i] );
       }
       fprintf(f, "\n" );
     }

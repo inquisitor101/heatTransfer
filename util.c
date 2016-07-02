@@ -148,7 +148,6 @@ void initialize(void)
 }
 
 
-
 void boundary(void)
 {
   /*
@@ -187,35 +186,100 @@ void boundary(void)
   insulated(0, 1); // plane _| i (0), j (1), k(2)
   insulated(0, 2); // plane _| i (0), j (1), k(2)
 
-  // convective(Nx-1, 0, h, Tsurr); // plane _| i (0), j (1), k(2)
-  // convective(Ny-1, 1, h, Tsurr); // plane _| i (0), j (1), k(2)
+  convective(Nx-1, 0, h, Tsurr); // plane _| i (0), j (1), k(2)
+  convective(Ny-1, 1, h, Tsurr); // plane _| i (0), j (1), k(2)
   convective(Nz-1, 2, h, Tsurr); // plane _| i (0), j (1), k(2)
 
   // @TODO:
   //       fixed boundary as a function
-  Dirichlet(Nx-1, 0, 200.0);
-  Dirichlet(Ny-1, 1, 150.0);
+  // Dirichlet(Nx-1, 0, 200.0);
+  // Dirichlet(Ny-1, 1, 250.0);
+
+  allCorners(1, h, Tsurr,
+             0, 0, 0,
+             0, 0, 0,
+             1, h, Tsurr,
+             1, h, Tsurr,
+             0, 0, 0 );
+
 
   // @TODO:
   //       corner function
+  // @XXX: done !? (double-check)
 
   // @TODO:
   //       vertices function
 
   // @IDEA:
   //       radiation function
+
+  // @IDEA:
+  //       heat generation function
+
 }
 
 
-void allCorners(
-                char isConv_S, double hs, double Ts, // convection south -side
-                char isConv_N, double hn, double Tn, // convection north -side
-                char isConv_W, double hw, double Tw, // convection west  -side
-                char isConv_E, double he, double Te, // convection east  -side
-                char isConv_T, double ht, double Tt, // convection top   -side
-                char isConv_B, double hb, double Tb) // convection bottom-side
+void allVertices(int isConv_S, double hs, double Ts, // convection south -side
+                int isConv_N, double hn, double Tn, // convection north -side
+                int isConv_W, double hw, double Tw, // convection west  -side
+                int isConv_E, double he, double Te, // convection east  -side
+                int isConv_T, double ht, double Tt, // convection top   -side
+                int isConv_B, double hb, double Tb) // convection bottom-side
 {
-  /*
+/*
+      stencil kernel:
+
+                                 (T)   (N)
+                                  |   /
+                                  | /
+                       (W) ------ O ------ (E)
+                                / |
+                              /   |
+                           (S)   (B)
+
+      T: top     B: bottom
+      N: north   S: south
+      W: west    E: east
+
+      vertex diagram:
+
+                               G---(12)-----H
+                             / |         /  |
+                          (7) (9)     (8)  (11)
+                        /      |     /      |    <== (BACK)
+                       C--(4)--|---D        |
+                       |       E---|-(10)---F
+        (FRONT) ==>    |      /    |      /
+                      (1)  (5)    (3)  (6)       <== (MIDDLE)
+                       | /         |  /
+                       A----(2)----B
+    legend:
+      corners:
+        A: front, left-bottom   B: front, right-bottom
+        C: front, left-top      D: front, right-top
+        E: back, left-bottom    F: back, right-bottom
+        G: back, left-top       H: back, right-top
+
+      vertices:
+           FRONT           MIDDLE            BACK
+        (1): left      (5): lower-left    (09): left
+        (2): bottom    (6): lower-right   (10): bottom
+        (3): right     (7): upper-left    (11): right
+        (4): top       (8): upper-left    (12): top
+*/
+
+
+}
+
+
+void allCorners(int isConv_S, double hs, double Ts, // convection south -side
+                int isConv_N, double hn, double Tn, // convection north -side
+                int isConv_W, double hw, double Tw, // convection west  -side
+                int isConv_E, double he, double Te, // convection east  -side
+                int isConv_T, double ht, double Tt, // convection top   -side
+                int isConv_B, double hb, double Tb) // convection bottom-side
+{
+/*
     stencil kernel:
 
                                (T)   (N)
@@ -240,21 +304,21 @@ void allCorners(
       (FRONT) ==>    |   /    |   /
                      | /      | /
                      A--------B
-  letter code:
+  legend:
 
     A: front, left-bottom   B: front, right-bottom
     C: front, left-top      D: front, right-top
     E: back, left-bottom    F: back, right-bottom
     G: back, left-top       H: back, right-top
 
-  */
+*/
 
   //  @TODO:
   //        add convection -- radiation ? -- too
   int i, j, k, kc, kw, ke, kn, ks, kt, kb;
-  double Coef_ij, Coef_ik, Coef_jk, conv_ij, conv_ik, conv_jk, term;
+  double Coef_ij, Coef_ik, Coef_jk, term;
 
-  double denom, cond0 = kd*( dy*dz/dx + dx*dz/dy + dx*dy/dz)/4;
+  double denom, cond0 = kd*( dy*dz/dx + dx*dz/dy + dx*dy/dz )/4.0;
 
   assert( isConv_S == 0 || isConv_S == 1 );
   assert( isConv_N == 0 || isConv_N == 1 );
@@ -266,11 +330,6 @@ void allCorners(
   Coef_ij = (dx/2)*(dy/2)/(Ch*rho); // convection constant for ij-plane
   Coef_ik = (dx/2)*(dz/2)/(Ch/rho); // convection constant for ik-plane
   Coef_jk = (dy/2)*(dz/2)/(Ch*rho); // convection constant for jk-plane
-
-// kc = Nx*Ny*k+j*Nx+i;
-// kt = kc+Nx*Ny; kb = kc-Nx*Ny;
-// ks = kc+Nx;    kn = kc-Nx;
-// ke = kc+1;     kw = kc-1;
 
   // corner A
   i = 0; j = Ny-1; k = 0;
@@ -292,7 +351,7 @@ void allCorners(
   denom += cond0;
 
   M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
-            (kd*dx*dz/(4*dy))*M[ks] + \
+            (kd*dx*dz/(4*dy))*M[kn] + \
             (kd*dx*dy/(4*dz))*M[kt] + \
             term )/denom;
 
@@ -464,7 +523,6 @@ void allCorners(
             (kd*dx*dy/(4*dz))*M[kb] + \
             term )/denom;
 
-  }
 
 }
 

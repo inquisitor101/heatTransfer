@@ -306,9 +306,36 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef3*M[kt] + \
               term )/denom;
   }
-
   // vertex 2
-  i = Nx-1; j = Ny-1; k = 0;
+  j = Ny-1; k = 0;
+
+  coef1 = kd*dy*dz/(4*dx);
+  coef2 = kd*dz*dx/(2*dy);
+  coef3 = kd*dy*dx/(2*dz);
+
+  term = 0.0;
+  term += (isConv_S)  ? hs*dz*dx*Ts/(2*Ch*rho)  : 0.0;
+  term += (isConv_B)  ? hb*dy*dx*Tb/(2*Ch*rho)  : 0.0;
+
+  denom = 2*coef1 + coef2 + coef3;
+  denom += (isConv_S) ? hs*dz*dx/(2*Ch*rho) : 0.0;
+  denom += (isConv_B) ? hb*dy*dx/(2*Ch*rho) : 0.0;
+
+  for (i=1; i<Nx-1; i++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
+    kn = kc-Nx;
+    ke = kc+1;
+    kw = kc-1;
+
+    M[kc] = ( coef1*M[kw] + \
+              coef1*M[ke] + \
+              coef2*M[kn] + \
+              coef3*M[kt] + \
+              term )/denom;
+  }
+  // vertex 3
+  i = Nx-1; j = Ny-1;
 
   coef1 = kd*dy*dz/(2*dx);
   coef2 = kd*dx*dz/(2*dy);
@@ -335,8 +362,6 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef3*M[kb] + \
               term )/denom;
   }
-  // vertex 3
-
   // vertex 4
 
   // vertex 5

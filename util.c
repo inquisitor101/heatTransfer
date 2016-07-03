@@ -220,11 +220,11 @@ void boundary(void)
 
 
 void allVertices(int isConv_S, double hs, double Ts, // convection south -side
-                int isConv_N, double hn, double Tn, // convection north -side
-                int isConv_W, double hw, double Tw, // convection west  -side
-                int isConv_E, double he, double Te, // convection east  -side
-                int isConv_T, double ht, double Tt, // convection top   -side
-                int isConv_B, double hb, double Tb) // convection bottom-side
+                 int isConv_N, double hn, double Tn, // convection north -side
+                 int isConv_W, double hw, double Tw, // convection west  -side
+                 int isConv_E, double he, double Te, // convection east  -side
+                 int isConv_T, double ht, double Tt, // convection top   -side
+                 int isConv_B, double hb, double Tb) // convection bottom-side
 {
 /*
       stencil kernel:
@@ -244,7 +244,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
       vertex diagram:
 
                                G---(12)-----H
-                             / |         /  |
+                             / |          / |
                           (7) (9)     (8)  (11)
                         /      |     /      |    <== (BACK)
                        C--(4)--|---D        |
@@ -262,12 +262,98 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
 
       vertices:
            FRONT           MIDDLE            BACK
+        -----------    ---------------    ------------
         (1): left      (5): lower-left    (09): left
         (2): bottom    (6): lower-right   (10): bottom
         (3): right     (7): upper-left    (11): right
         (4): top       (8): upper-left    (12): top
 */
 
+  int i, j, k, kc, kw, ke, kn, ks, kt, kb;
+  double coef1, coef2, coef3, term, denom;
+
+  assert( isConv_S == 0 || isConv_S == 1 );
+  assert( isConv_N == 0 || isConv_N == 1 );
+  assert( isConv_W == 0 || isConv_W == 1 );
+  assert( isConv_E == 0 || isConv_E == 1 );
+  assert( isConv_T == 0 || isConv_T == 1 );
+  assert( isConv_B == 0 || isConv_B == 1 );
+
+  // vertex 1
+  i = 0; j = Ny-1;
+
+  coef1 = kd*dy*dz/(2*dx);
+  coef2 = kd*dx*dz/(2*dy);
+  coef3 = kd*dx*dy/(4*dz);
+
+  term = 0.0;
+  term += (isConv_S)  ? hs*dx*dz*Ts/(2*Ch*rho)  : 0.0;
+  term += (isConv_W)  ? hw*dy*dz*Tw/(2*Ch*rho)  : 0.0;
+
+  denom = coef1 + coef2 + 2*coef3;
+  denom += (isConv_S) ? hs*dx*dz/(2*Ch*rho) : 0.0;
+  denom += (isConv_W) ? hw*dy*dz/(2*Ch*rho) : 0.0;
+
+  for (k=1; k<Nz-1; k++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kb = kc-Nx*Ny;
+    kn = kc-Nx;
+    ke = kc+1;
+
+    M[kc] = ( coef1*M[ke] + \
+              coef2*M[kn] + \
+              coef3*M[kb] + \
+              coef3*M[kt] + \
+              term )/denom;
+  }
+
+  // vertex 2
+  i = Nx-1; j = Ny-1; k = 0;
+
+  coef1 = kd*dy*dz/(2*dx);
+  coef2 = kd*dx*dz/(2*dy);
+  coef3 = kd*dx*dy/(4*dz);
+
+  term = 0.0;
+  term += (isConv_S)  ? hs*dx*dz*Ts/(2*Ch*rho)  : 0.0;
+  term += (isConv_E)  ? he*dy*dz*Te/(2*Ch*rho)  : 0.0;
+
+  denom = coef1 + coef2 + 2*coef3;
+  denom += (isConv_S) ? hs*dx*dz/(2*Ch*rho) : 0.0;
+  denom += (isConv_E) ? he*dy*dz/(2*Ch*rho) : 0.0;
+
+  for (k=1; k<Nz-1; k++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
+    kb = kc-Nx*Ny;
+    kn = kc-Nx;
+    kw = kc-1;
+
+    M[kc] = ( coef1*M[kw] + \
+              coef2*M[kn] + \
+              coef3*M[kt] + \
+              coef3*M[kb] + \
+              term )/denom;
+  }
+  // vertex 3
+
+  // vertex 4
+
+  // vertex 5
+
+  // vertex 6
+
+  // vertex 7
+
+  // vertex 8
+
+  // vertex 9
+
+  // vertex 10
+
+  // vertex 11
+
+  // vertex 12
 
 }
 
@@ -314,7 +400,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
 */
 
   //  @TODO:
-  //        add convection -- radiation ? -- too
+  //        add radiation ?
   int i, j, k, kc, kw, ke, kn, ks, kt, kb;
   double Coef_ij, Coef_ik, Coef_jk, term;
 

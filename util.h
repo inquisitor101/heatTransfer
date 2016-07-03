@@ -39,10 +39,10 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
 
 
 void allVertices(int isConv_S, double hs, double Ts, // convection south -side
-                int isConv_N, double hn, double Tn, // convection north -side
-                int isConv_W, double hw, double Tw, // convection west  -side
-                int isConv_E, double he, double Te, // convection east  -side
-                int isConv_T, double ht, double Tt, // convection top   -side
-                int isConv_B, double hb, double Tb);// convection bottom-side
-                              
+                 int isConv_N, double hn, double Tn, // convection north -side
+                 int isConv_W, double hw, double Tw, // convection west  -side
+                 int isConv_E, double he, double Te, // convection east  -side
+                 int isConv_T, double ht, double Tt, // convection top   -side
+                 int isConv_B, double hb, double Tb);// convection bottom-side
+
 #endif

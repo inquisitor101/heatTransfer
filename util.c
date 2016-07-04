@@ -176,32 +176,42 @@ void boundary(void)
 
   */
 
-  // this means there is insulation
-  // in (inner surface only):
-  //                         (jk)-plane @ i=0   (WEST)
-  //                         (ik)-plane @ j=0   (NORTH)
-  //                         (ij)-plane @ k=0   (BOTTOM)
-  //
-  insulated(0, 0); // plane _| i (0), j (1), k(2)
-  insulated(0, 1); // plane _| i (0), j (1), k(2)
-  insulated(0, 2); // plane _| i (0), j (1), k(2)
+#define T 1   // top    plane/surface
+#define B 2   // bottom plane/surface
+#define E 3   // east   plane/surface
+#define W 4   // west   plane/surface
+#define S 5   // south  plane/surface
+#define N 6   // north  plane/surface
 
-  convective(Nx-1, 0, h, Tsurr); // plane _| i (0), j (1), k(2)
-  convective(Ny-1, 1, h, Tsurr); // plane _| i (0), j (1), k(2)
-  convective(Nz-1, 2, h, Tsurr); // plane _| i (0), j (1), k(2)
+  // insulation in (inner surface only):
+  insulated();
+  insulated();
+  insulated();
+
+  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
+  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
+  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
 
   // @TODO:
-  //       fixed boundary as a function
+  //       correct from steady-state boundary to transient (include dt).
+  //       fix allCorners, surface, allVertices functions accordingly...
+
   // Dirichlet(Nx-1, 0, 200.0);
   // Dirichlet(Ny-1, 1, 250.0);
 
-  allCorners(1, h, Tsurr,
-             0, 0, 0,
-             0, 0, 0,
-             1, h, Tsurr,
-             1, h, Tsurr,
-             0, 0, 0 );
+  allCorners(isConv_S, hs, Ts, // convection south -side
+             isConv_N, hn, Tn, // convection north -side
+             isConv_W, hw, Tw, // convection west  -side
+             isConv_E, he, Te, // convection east  -side
+             isConv_T, ht, Tt, // convection top   -side
+             isConv_B, hb, Tb);// convection bottom-side
 
+  allVertices(isConv_S, hs, Ts, // convection south -side
+              isConv_N, hn, Tn, // convection north -side
+              isConv_W, hw, Tw, // convection west  -side
+              isConv_E, he, Te, // convection east  -side
+              isConv_T, ht, Tt, // convection top   -side
+              isConv_B, hb, Tb);// convection bottom-side
 
   // @TODO:
   //       corner function
@@ -249,7 +259,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
                         /      |     /      |    <== (BACK)
                        C--(4)--|---D        |
                        |       E---|-(10)---F
-        (FRONT) ==>    |      /    |      /
+        (FRONT) ==>    |     /     |      /
                       (1)  (5)    (3)  (6)       <== (MIDDLE)
                        | /         |  /
                        A----(2)----B
@@ -873,13 +883,34 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
 }
 
 
-void Dirichlet(int fix, int plane, double value)
+void Dirichlet(int surface, double value)
 {
-  int i, j, k, kc;
-
+  int i, j, k, kc, fix, plane;
+  assert(surface == 1 || surface == 2 || \
+         surface == 3 || surface == 4 || \
+         surface == 5 || surface == 6 );
 #define X 0 //  plane perpendicular to i-axis
 #define Y 1 //  plane perpendicular to j-axis
 #define Z 2 //  plane perpendicular to k-axis
+
+  if (surface == 1){ // case, top plane
+    plane = Z; fix = Nz-1;
+  }
+  if (surface == 2){ // case, bottom plane
+    plane = Z; fix = 0;
+  }
+  if (surface == 3){ // case, east plane
+    plane = X; fix = Nx-1;
+  }
+  if (surface == 4){ // case, west plane
+    plane = X; fix = 0;
+  }
+  if (surface == 5){ // case, south plane
+    plane = Y; fix = Ny-1;
+  }
+  if (surface == 6){ // case, north plane
+    plane = Y; fix = 0;
+  }
 
   switch (plane) {
 
@@ -927,19 +958,40 @@ void Dirichlet(int fix, int plane, double value)
 }
 
 
-void convective(int fix, int plane,
-                double h, double Tsurr)
+void surface(int surface,
+             double h, double Tsurr)
 {
   /*
-    This only takes care of convection in the inner surface of a given plane
-    i.e. excluding corners and vertices.
+    This only takes care of convection/free-surface in the inner surface
+    of a given plane -- i.e. excluding corners and vertices.
   */
-  int i, j, k, kw, ke, kt, kb, ks, kn, kc;
+  int i, j, k, kw, ke, kt, kb, ks, kn, kc, fix, plane;
   double Ccp, Cxp, Cyp, Czp, Csp;
-
+  assert(surface == 1 || surface == 2 || \
+         surface == 3 || surface == 4 || \
+         surface == 5 || surface == 6 );
 #define X 0 // plane perpendicular to i-axis
 #define Y 1 // plane perpendicular to j-axis
 #define Z 2 // plane perpendicular to k-axis
+
+  if (surface == 1){ // case, top plane
+    plane = Z; fix = Nz-1;
+  }
+  if (surface == 2){ // case, bottom plane
+    plane = Z; fix = 0;
+  }
+  if (surface == 3){ // case, east plane
+    plane = X; fix = Nx-1;
+  }
+  if (surface == 4){ // case, west plane
+    plane = X; fix = 0;
+  }
+  if (surface == 5){ // case, south plane
+    plane = Y; fix = Ny-1;
+  }
+  if (surface == 6){ // case, north plane
+    plane = Y; fix = 0;
+  }
 
   switch (plane) {
 
@@ -1053,17 +1105,38 @@ void convective(int fix, int plane,
 }
 
 
-void insulated(int fix, int plane)
+void insulated(int surface)
 {
   /*
     This only takes care of insulation in the inner surface of a given plane
     i.e. excluding corners and vertices.
   */
-  int i, j, k, step;
-
+  int i, j, k, step, plane, fix;
+  assert(surface == 1 || surface == 2 || \
+         surface == 3 || surface == 4 || \
+         surface == 5 || surface == 6 );
 #define X 0  // plane perpendicular to i-axis
 #define Y 1  // plane perpendicular to j-axis
 #define Z 2  // plane perpendicular to k-axis
+
+  if (surface == 1){ // case, top plane
+    plane = Z; fix = Nz-1;
+  }
+  if (surface == 2){ // case, bottom plane
+    plane = Z; fix = 0;
+  }
+  if (surface == 3){ // case, east plane
+    plane = X; fix = Nx-1;
+  }
+  if (surface == 4){ // case, west plane
+    plane = X; fix = 0;
+  }
+  if (surface == 5){ // case, south plane
+    plane = Y; fix = Ny-1;
+  }
+  if (surface == 6){ // case, north plane
+    plane = Y; fix = 0;
+  }
 
   switch(plane){
 

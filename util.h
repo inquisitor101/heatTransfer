@@ -23,12 +23,12 @@ void initialize(void);
 
 void boundary(void);
 
-void insulated(int fix, int plane);
+void insulated(int surface);
 
-void Dirichlet(int fix, int plane, double value);
+void Dirichlet(int surface, double value);
 
-void convective(int fix, int plane,
-                double h, double Tsurr);
+void surface(int surface,
+             double h, double Tsurr);
 
 void allCorners(int isConv_S, double hs, double Ts, // convection south -side
                 int isConv_N, double hn, double Tn, // convection north -side

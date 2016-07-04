@@ -475,14 +475,145 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               term )/denom;
   }
   // vertex 8
+  i = 0; k = Nz-1;
 
+  coef1 = kd*dz*dy/(2*dx);
+  coef2 = kd*dx*dz/(4*dy);
+  coef3 = kd*dx*dy/(2*dz);
+
+  term = 0.0;
+  term += (isConv_W)  ? hw*dz*dy*Tw/(2*Ch*rho)  : 0.0;
+  term += (isConv_T)  ? ht*dx*dy*Tt/(2*Ch*rho)  : 0.0;
+
+  denom = coef1 + 2*coef2 + coef3;
+  denom += (isConv_W) ? hw*dz*dy/(2*Ch*rho) : 0.0;
+  denom += (isConv_T) ? ht*dx*dy/(2*Ch*rho) : 0.0;
+
+  for (j=1; j<Ny-1; j++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kb = kc-Nx*Ny;
+    ks = kc+Nx;
+    kn = kc-Nx;
+    ke = kc+1;
+
+    M[kc] = ( coef1*M[ke] + \
+              coef2*M[kn] + \
+              coef2*M[ks] + \
+              coef3*M[kb] + \
+              term )/denom;
+  }
   // vertex 9
+  i = 0; j = 0;
 
+  coef1 = kd*dy*dz/(2*dx);
+  coef2 = kd*dx*dz/(2*dy);
+  coef3 = kd*dx*dy/(4*dz);
+
+  term = 0.0;
+  term += (isConv_N)  ? hn*dx*dz*Tn/(2*Ch*rho)  : 0.0;
+  term += (isConv_W)  ? hw*dy*dz*Tw/(2*Ch*rho)  : 0.0;
+
+  denom = coef1 + coef2 + 2*coef3;
+  denom += (isConv_N) ? hn*dx*dz/(2*Ch*rho) : 0.0;
+  denom += (isConv_W) ? hw*dy*dz/(2*Ch*rho) : 0.0;
+
+  for (k=1; k<Nz-1; k++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
+    kb = kc-Nx*Ny;
+    ks = kc+Nx;
+    ke = kc+1;
+
+    M[kc] = ( coef1*M[ke] + \
+              coef2*M[ks] + \
+              coef3*M[kb] + \
+              coef3*M[kt] + \
+              term )/denom;
+  }
   // vertex 10
+  j = 0; k = 0;
 
+  coef1 = kd*dy*dz/(4*dx);
+  coef2 = kd*dz*dx/(2*dy);
+  coef3 = kd*dy*dx/(2*dz);
+
+  term = 0.0;
+  term += (isConv_N)  ? hn*dz*dx*Tn/(2*Ch*rho)  : 0.0;
+  term += (isConv_B)  ? hb*dy*dx*Tb/(2*Ch*rho)  : 0.0;
+
+  denom = 2*coef1 + coef2 + coef3;
+  denom += (isConv_N) ? hn*dz*dx/(2*Ch*rho) : 0.0;
+  denom += (isConv_B) ? hb*dy*dx/(2*Ch*rho) : 0.0;
+
+  for (i=1; i<Nx-1; i++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
+    ks = kc+Nx;
+    ke = kc+1;
+    kw = kc-1;
+
+    M[kc] = ( coef1*M[kw] + \
+              coef1*M[ke] + \
+              coef2*M[ks] + \
+              coef3*M[kt] + \
+              term )/denom;
+  }
   // vertex 11
+  i = Nx-1; j = 0;
 
+  coef1 = kd*dy*dz/(2*dx);
+  coef2 = kd*dx*dz/(2*dy);
+  coef3 = kd*dx*dy/(4*dz);
+
+  term = 0.0;
+  term += (isConv_N)  ? hn*dx*dz*Tn/(2*Ch*rho)  : 0.0;
+  term += (isConv_E)  ? he*dy*dz*Te/(2*Ch*rho)  : 0.0;
+
+  denom = coef1 + coef2 + 2*coef3;
+  denom += (isConv_N) ? hn*dx*dz/(2*Ch*rho) : 0.0;
+  denom += (isConv_E) ? he*dy*dz/(2*Ch*rho) : 0.0;
+
+  for (k=1; k<Nz-1; k++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
+    kb = kc-Nx*Ny;
+    ks = kc+Nx;
+    kw = kc-1;
+
+    M[kc] = ( coef1*M[kw] + \
+              coef2*M[ks] + \
+              coef3*M[kt] + \
+              coef3*M[kb] + \
+              term )/denom;
+  }
   // vertex 12
+  j = 0; k = Nz-1;
+
+  coef1 = kd*dy*dz/(4*dx);
+  coef2 = kd*dz*dx/(2*dy);
+  coef3 = kd*dy*dx/(2*dz);
+
+  term = 0.0;
+  term += (isConv_N)  ? hn*dz*dx*Tn/(2*Ch*rho)  : 0.0;
+  term += (isConv_T)  ? ht*dy*dx*Tt/(2*Ch*rho)  : 0.0;
+
+  denom = 2*coef1 + coef2 + coef3;
+  denom += (isConv_N) ? hn*dz*dx/(2*Ch*rho) : 0.0;
+  denom += (isConv_T) ? ht*dy*dx/(2*Ch*rho) : 0.0;
+
+  for (i=1; i<Nx-1; i++){
+    kc = Nx*Ny*k+j*Nx+i;
+    kb = kc-Nx*Ny;
+    ks = kc+Nx;
+    kw = kc-1;
+    ke = kc+1;
+
+    M[kc] = ( coef1*M[kw] + \
+              coef1*M[ke] + \
+              coef2*M[ks] + \
+              coef3*M[kb] + \
+              term )/denom;
+  }
 
 }
 

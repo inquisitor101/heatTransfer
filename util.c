@@ -148,7 +148,8 @@ void initialize(void)
 }
 
 
-void boundary(void)
+void boundary(int condition[6], double h[6],
+              double Tsurr[6], double temp[6])
 {
   /*
     stencil kernel:
@@ -176,50 +177,49 @@ void boundary(void)
 
   */
 
-#define T 1   // top    plane/surface
-#define B 2   // bottom plane/surface
-#define E 3   // east   plane/surface
-#define W 4   // west   plane/surface
-#define S 5   // south  plane/surface
-#define N 6   // north  plane/surface
+#define convection 1  // convection+conduction boundary
+#define insulation 2  // insulation boundary
+#define Dirichlet  3  // fixed temperature boundary
 
-  // insulation in (inner surface only):
-  insulated();
-  insulated();
-  insulated();
+  // 0 : T
+  // 1 : B
+  // 2 : E
+  // 3 : W
+  // 4 : S
+  // 5 : N
+  int isConv[6] = {0}; // NO convection -- DEFAULT
 
-  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
-  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
-  surface(, h, Tsurr); // plane _| i (0), j (1), k(2)
+  for (int i=0; i<6; i++){
+    assert(condition[i] == 1 || condition[i] == 2 || condition[i] == 3 );
 
-  // @TODO:
-  //       correct from steady-state boundary to transient (include dt).
-  //       fix allCorners, surface, allVertices functions accordingly...
+    if (condition[i] == convection){
+      isConv[i] = 1;
+      surface(i, h[i], Tsurr[i]);
+    }
+    else if (condition[i] == insulation){
+      insulated(i);
+    }
+    else {
+      Dirichlet(i, temp[i]);
+    }
 
-  // Dirichlet(Nx-1, 0, 200.0);
-  // Dirichlet(Ny-1, 1, 250.0);
+  }
 
-  allCorners(isConv_S, hs, Ts, // convection south -side
-             isConv_N, hn, Tn, // convection north -side
-             isConv_W, hw, Tw, // convection west  -side
-             isConv_E, he, Te, // convection east  -side
-             isConv_T, ht, Tt, // convection top   -side
-             isConv_B, hb, Tb);// convection bottom-side
+  allCorners(isConv[4], h[4], Tsurr[4],    // convection south -side
+             isConv[5], h[5], Tsurr[5],    // convection north -side
+             isConv[3], h[3], Tsurr[3],    // convection west  -side
+             isConv[2], h[2], Tsurr[2],    // convection east  -side
+             isConv[0], h[0], Tsurr[0],    // convection top   -side
+             isConv[1], h[1], Tsurr[1] );  // convection bottom-side
 
-  allVertices(isConv_S, hs, Ts, // convection south -side
-              isConv_N, hn, Tn, // convection north -side
-              isConv_W, hw, Tw, // convection west  -side
-              isConv_E, he, Te, // convection east  -side
-              isConv_T, ht, Tt, // convection top   -side
-              isConv_B, hb, Tb);// convection bottom-side
+  allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
+              isConv[5], h[5], Tsurr[5],   // convection north -side
+              isConv[3], h[3], Tsurr[3],   // convection west  -side
+              isConv[2], h[2], Tsurr[2],   // convection east  -side
+              isConv[0], h[0], Tsurr[0],   // convection top   -side
+              isConv[1], h[1], Tsurr[1] ); // convection bottom-side
 
-  // @TODO:
-  //       corner function
-  // @XXX: done !? (double-check)
-
-  // @TODO:
-  //       vertices function
-
+// ---------------------------------------------------------------------
   // @IDEA:
   //       radiation function
 
@@ -893,22 +893,22 @@ void Dirichlet(int surface, double value)
 #define Y 1 //  plane perpendicular to j-axis
 #define Z 2 //  plane perpendicular to k-axis
 
-  if (surface == 1){ // case, top plane
+  if (surface == 0){ // case, top plane
     plane = Z; fix = Nz-1;
   }
-  if (surface == 2){ // case, bottom plane
+  if (surface == 1){ // case, bottom plane
     plane = Z; fix = 0;
   }
-  if (surface == 3){ // case, east plane
+  if (surface == 2){ // case, east plane
     plane = X; fix = Nx-1;
   }
-  if (surface == 4){ // case, west plane
+  if (surface == 3){ // case, west plane
     plane = X; fix = 0;
   }
-  if (surface == 5){ // case, south plane
+  if (surface == 4){ // case, south plane
     plane = Y; fix = Ny-1;
   }
-  if (surface == 6){ // case, north plane
+  if (surface == 5){ // case, north plane
     plane = Y; fix = 0;
   }
 
@@ -974,22 +974,22 @@ void surface(int surface,
 #define Y 1 // plane perpendicular to j-axis
 #define Z 2 // plane perpendicular to k-axis
 
-  if (surface == 1){ // case, top plane
+  if (surface == 0){ // case, top plane
     plane = Z; fix = Nz-1;
   }
-  if (surface == 2){ // case, bottom plane
+  if (surface == 1){ // case, bottom plane
     plane = Z; fix = 0;
   }
-  if (surface == 3){ // case, east plane
+  if (surface == 2){ // case, east plane
     plane = X; fix = Nx-1;
   }
-  if (surface == 4){ // case, west plane
+  if (surface == 3){ // case, west plane
     plane = X; fix = 0;
   }
-  if (surface == 5){ // case, south plane
+  if (surface == 4){ // case, south plane
     plane = Y; fix = Ny-1;
   }
-  if (surface == 6){ // case, north plane
+  if (surface == 5){ // case, north plane
     plane = Y; fix = 0;
   }
 
@@ -1119,22 +1119,22 @@ void insulated(int surface)
 #define Y 1  // plane perpendicular to j-axis
 #define Z 2  // plane perpendicular to k-axis
 
-  if (surface == 1){ // case, top plane
+  if (surface == 0){ // case, top plane
     plane = Z; fix = Nz-1;
   }
-  if (surface == 2){ // case, bottom plane
+  if (surface == 1){ // case, bottom plane
     plane = Z; fix = 0;
   }
-  if (surface == 3){ // case, east plane
+  if (surface == 2){ // case, east plane
     plane = X; fix = Nx-1;
   }
-  if (surface == 4){ // case, west plane
+  if (surface == 3){ // case, west plane
     plane = X; fix = 0;
   }
-  if (surface == 5){ // case, south plane
+  if (surface == 4){ // case, south plane
     plane = Y; fix = Ny-1;
   }
-  if (surface == 6){ // case, north plane
+  if (surface == 5){ // case, north plane
     plane = Y; fix = 0;
   }
 

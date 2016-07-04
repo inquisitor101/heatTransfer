@@ -106,7 +106,7 @@ void SOR(void)
       }
     }
 
-    boundary();
+    boundary(boundCond[6], h_conv[6], Tsurr[6], fixedTemp[6]);
 
     if (iter%10 == 0){
       // calculate norm of error

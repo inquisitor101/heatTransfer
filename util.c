@@ -28,7 +28,7 @@ void initialize(void)
   for (k=1; k<Nz-1; k++){
     for (j=1; j<Ny-1; j++){
       for (i=1; i<Nx-1; i++){
-        M[Nx*Ny*k+j*Nx+i] = 273.0; // Kelvin
+        M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
       }
     }
   }
@@ -37,42 +37,42 @@ void initialize(void)
   k = Nz-1;
   for (j=1; j<Ny-1; j++){
     for (i=1; i<Nx-1; i++){
-      M[Nx*Ny*k+j*Nx+i] = 280.0; // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
     }
   }
   // boundary: bottom surface
   k = 0;
   for (j=1; j<Ny-1; j++){
     for (i=1; i<Nx-1; i++){
-      M[Nx*Ny*k+j*Nx+i] = 250.0; // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
     }
   }
   // boundary: west surface
   i = 0;
   for (k=1; k<Nz-1; k++){
     for (j=1; j<Ny-1; j++){
-      M[Nx*Ny*k+j*Nx+i] = 250.0; // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
     }
   }
   // boundary: east surface
   i = Nx-1;
   for (k=1; k<Nz-1; k++){
     for (j=1; j<Ny-1; j++){
-      M[Nx*Ny*k+j*Nx+i] = 290.0; // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
     }
   }
   // boundary: north surface
   j = 0;
   for (k=1; k<Nz-1; k++){
     for (i=1; i<Nx-1; i++){
-      M[Nx*Ny*k+j*Nx+i] = 250.0;  // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25;  // Kelvin
     }
   }
   // boundary: south surface
   j = Ny-1;
   for (k=1; k<Nz-1; k++){
     for (i=1; i<Nx-1; i++){
-      M[Nx*Ny*k+j*Nx+i] = 290.0; // Kelvin
+      M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
     }
   }
 
@@ -179,7 +179,7 @@ void boundary(int condition[6], double h[6],
 
 #define convection 1  // convection+conduction boundary
 #define insulation 2  // insulation boundary
-#define Dirichlet  3  // fixed temperature boundary
+#define dirichCond 3  // fixed temperature boundary
 
   // 0 : T
   // 1 : B
@@ -199,7 +199,7 @@ void boundary(int condition[6], double h[6],
     else if (condition[i] == insulation){
       insulated(i);
     }
-    else {
+    else if (condition[i] == dirichCond){
       Dirichlet(i, temp[i]);
     }
 
@@ -211,13 +211,13 @@ void boundary(int condition[6], double h[6],
              isConv[2], h[2], Tsurr[2],    // convection east  -side
              isConv[0], h[0], Tsurr[0],    // convection top   -side
              isConv[1], h[1], Tsurr[1] );  // convection bottom-side
-
-  allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
-              isConv[5], h[5], Tsurr[5],   // convection north -side
-              isConv[3], h[3], Tsurr[3],   // convection west  -side
-              isConv[2], h[2], Tsurr[2],   // convection east  -side
-              isConv[0], h[0], Tsurr[0],   // convection top   -side
-              isConv[1], h[1], Tsurr[1] ); // convection bottom-side
+  //
+  // allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
+  //             isConv[5], h[5], Tsurr[5],   // convection north -side
+  //             isConv[3], h[3], Tsurr[3],   // convection west  -side
+  //             isConv[2], h[2], Tsurr[2],   // convection east  -side
+  //             isConv[0], h[0], Tsurr[0],   // convection top   -side
+  //             isConv[1], h[1], Tsurr[1] ); // convection bottom-side
 
 // ---------------------------------------------------------------------
   // @IDEA:
@@ -306,6 +306,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
 
   for (k=1; k<Nz-1; k++){
     kc = Nx*Ny*k+j*Nx+i;
+    kt = kc+Nx*Ny;
     kb = kc-Nx*Ny;
     kn = kc-Nx;
     ke = kc+1;
@@ -850,7 +851,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   denom += (isConv_T) ? ht*Coef_ij  : 0.0;
   denom += cond0;
 
-  M[kc] = ( (kd*dy*dz/(4/dx))*M[ke] + \
+  M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
             (kd*dx*dz/(4*dy))*M[ks] + \
             (kd*dx*dy/(4*dz))*M[kb] + \
             term )/denom;
@@ -886,9 +887,9 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
 void Dirichlet(int surface, double value)
 {
   int i, j, k, kc, fix, plane;
-  assert(surface == 1 || surface == 2 || \
-         surface == 3 || surface == 4 || \
-         surface == 5 || surface == 6 );
+  assert(surface == 0 || surface == 1 || \
+         surface == 2 || surface == 3 || \
+         surface == 4 || surface == 5 );
 #define X 0 //  plane perpendicular to i-axis
 #define Y 1 //  plane perpendicular to j-axis
 #define Z 2 //  plane perpendicular to k-axis
@@ -958,8 +959,7 @@ void Dirichlet(int surface, double value)
 }
 
 
-void surface(int surface,
-             double h, double Tsurr)
+void surface(int surface, double h, double Tsurr)
 {
   /*
     This only takes care of convection/free-surface in the inner surface
@@ -967,9 +967,9 @@ void surface(int surface,
   */
   int i, j, k, kw, ke, kt, kb, ks, kn, kc, fix, plane;
   double Ccp, Cxp, Cyp, Czp, Csp;
-  assert(surface == 1 || surface == 2 || \
-         surface == 3 || surface == 4 || \
-         surface == 5 || surface == 6 );
+  assert(surface == 0 || surface == 1 || \
+         surface == 2 || surface == 3 || \
+         surface == 4 || surface == 5 );
 #define X 0 // plane perpendicular to i-axis
 #define Y 1 // plane perpendicular to j-axis
 #define Z 2 // plane perpendicular to k-axis
@@ -1112,9 +1112,9 @@ void insulated(int surface)
     i.e. excluding corners and vertices.
   */
   int i, j, k, step, plane, fix;
-  assert(surface == 1 || surface == 2 || \
-         surface == 3 || surface == 4 || \
-         surface == 5 || surface == 6 );
+  assert(surface == 0 || surface == 1 || \
+         surface == 2 || surface == 3 || \
+         surface == 4 || surface == 5 );
 #define X 0  // plane perpendicular to i-axis
 #define Y 1  // plane perpendicular to j-axis
 #define Z 2  // plane perpendicular to k-axis

@@ -100,13 +100,13 @@ void SOR(void)
           M[kc] = w*( Cx*( M[ke] + M[kw] ) \
                     + Cy*( M[ks] + M[kn] ) \
                     + Cz*( M[kt] + M[kb] ) \
-                      + (1.0 - Cc)*M[kc] )
+                      + (1.0 - Cc)*M[kc] ) \
                       + (1.0 - w )*M[kc];
         }
       }
     }
 
-    boundary(boundCond[6], h_conv[6], Tsurr[6], fixedTemp[6]);
+    //boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
     if (iter%10 == 0){
       // calculate norm of error

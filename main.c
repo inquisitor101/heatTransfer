@@ -17,6 +17,7 @@
 */
 #include "header.h"
 #include "funcs.h"
+#include "util.h"
 
 
 int main(int argc, char **argv){
@@ -25,24 +26,56 @@ int main(int argc, char **argv){
   int solver = atoi(argv[1]);
 
 
-  Nx = 50;
-  Ny = 50;
-  Nz = 50;
+  Nx = 5;
+  Ny = 5;
+  Nz = 5;
 
   rho = 1.0;
   Ch  = 1.0;
-  h   = 20.0;
   kd  = 1.0/(rho*Ch);
   dx  = 1.0/(Nx-1);
   dy  = 1.0/(Ny-1);
   dz  = 1.0/(Nz-1);
   dt  = 0.00001;
-  Tsurr = 370.0;  // Kelvin
 
+  // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
+  // 1, convection/free, 2: insulation, 3: Dirichlet
+  boundCond[0] = 2; // T
+  boundCond[1] = 2; // B
+  boundCond[2] = 3; // E
+  boundCond[3] = 2; // W
+  boundCond[4] = 2; // S
+  boundCond[5] = 2; // N
 
+  // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
+  // 0: no convection OR free, #: convective coefficient
+  h_conv[0] = 0.00; // T
+  h_conv[1] = 0.00; // B
+  h_conv[2] = 20.0; // E
+  h_conv[3] = 20.0; // W
+  h_conv[4] = 0.00; // S
+  h_conv[5] = 0.00; // N
+
+  // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
+  // temperature in Kelvin (degC + 273.15)
+  Tsurr[0] = 273.15+25; // T
+  Tsurr[1] = 273.15+25; // B
+  Tsurr[2] = 273.15+25; // E
+  Tsurr[3] = 273.15+0 ; // W
+  Tsurr[4] = 273.15+25; // S
+  Tsurr[5] = 273.15+25; // N
+
+  // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
+  // surface temperature in Kelvin (degC + 273.15)
+  fixedTemp[0] = 273.15+25; // T
+  fixedTemp[1] = 373.15+40; // B
+  fixedTemp[2] = 273.15+55; // E
+  fixedTemp[3] = 273.15+25; // W
+  fixedTemp[4] = 273.15+25; // S
+  fixedTemp[5] = 273.15+25; // N
 
   initialize();
-  boundary();
+  boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
   switch(solver){
     // use Gauss-Seidel
@@ -84,13 +117,12 @@ int main(int argc, char **argv){
   for (k=0; k<Nz; k++){
     for (j=0; j<Ny; j++){
       for (i=0; i<Nx; i++){
-        fprintf(f, "%3.2f,", M[Nx*Ny*k+j*Nx+i] );
+        fprintf(f, "%3.2f,", M[Nx*Ny*k + j*Nx + i] );
       }
       fprintf(f, "\n" );
     }
     fprintf(f, "\n" );
   }
-
 
   free(M);
   printf("\n");

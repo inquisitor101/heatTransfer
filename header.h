@@ -27,9 +27,12 @@
 #include <assert.h>
 
 int Nx, Ny, Nz; // discretization points per axis
-double dx, dy, dz, dt, kd, h, Tsurr, Ch, rho;
+double dx, dy, dz, dt, kd, Ch, rho;
 double *M;
 
-
+int boundCond[6];
+double h_conv[6];
+double Tsurr[6];
+double fixedTemp[6];
 
 #endif

@@ -17,7 +17,7 @@ util.o: header.h util.h util.c
 funcs.o: header.h funcs.h funcs.c
 	$(CC) $(CFLAGS) -c funcs.c
 
-main.o: main.c funcs.h header.h
+main.o: main.c funcs.h header.h util.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:

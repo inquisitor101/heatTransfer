@@ -205,19 +205,21 @@ void boundary(int condition[6], double h[6],
 
   }
 
+  // @FIXME: insulation should is maybe surface with h=0 ? -- just conduction!?
+  //
   allCorners(isConv[4], h[4], Tsurr[4],    // convection south -side
              isConv[5], h[5], Tsurr[5],    // convection north -side
              isConv[3], h[3], Tsurr[3],    // convection west  -side
              isConv[2], h[2], Tsurr[2],    // convection east  -side
              isConv[0], h[0], Tsurr[0],    // convection top   -side
              isConv[1], h[1], Tsurr[1] );  // convection bottom-side
-  //
-  // allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
-  //             isConv[5], h[5], Tsurr[5],   // convection north -side
-  //             isConv[3], h[3], Tsurr[3],   // convection west  -side
-  //             isConv[2], h[2], Tsurr[2],   // convection east  -side
-  //             isConv[0], h[0], Tsurr[0],   // convection top   -side
-  //             isConv[1], h[1], Tsurr[1] ); // convection bottom-side
+
+  allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
+              isConv[5], h[5], Tsurr[5],   // convection north -side
+              isConv[3], h[3], Tsurr[3],   // convection west  -side
+              isConv[2], h[2], Tsurr[2],   // convection east  -side
+              isConv[0], h[0], Tsurr[0],   // convection top   -side
+              isConv[1], h[1], Tsurr[1] ); // convection bottom-side
 
 // ---------------------------------------------------------------------
   // @IDEA:
@@ -315,7 +317,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef3*M[kb] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 2
   j = Ny-1; k = 0;
@@ -343,7 +345,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef1*M[ke] + \
               coef2*M[kn] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 3
   i = Nx-1; j = Ny-1;
@@ -371,7 +373,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef3*M[kt] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 4
   j = Ny-1; k = Nz-1;
@@ -399,7 +401,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef1*M[ke] + \
               coef2*M[kn] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 5
   i = 0; k = 0;
@@ -427,7 +429,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef2*M[ks] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 6
   i = Nx-1; k = 0;
@@ -455,7 +457,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef2*M[ks] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 7
   i = Nx-1; k = Nz-1;
@@ -483,7 +485,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef2*M[ks] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 8
   i = 0; k = Nz-1;
@@ -511,7 +513,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[kn] + \
               coef2*M[ks] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 9
   i = 0; j = 0;
@@ -539,7 +541,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[ks] + \
               coef3*M[kb] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 10
   j = 0; k = 0;
@@ -567,7 +569,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef1*M[ke] + \
               coef2*M[ks] + \
               coef3*M[kt] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 11
   i = Nx-1; j = 0;
@@ -595,7 +597,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef2*M[ks] + \
               coef3*M[kt] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
   // vertex 12
   j = 0; k = Nz-1;
@@ -623,7 +625,7 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef1*M[ke] + \
               coef2*M[ks] + \
               coef3*M[kb] + \
-              term )/denom;
+              term - denom*M[kc] )*dt + M[kc];
   }
 
 }
@@ -710,7 +712,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
             (kd*dx*dz/(4*dy))*M[kn] + \
             (kd*dx*dy/(4*dz))*M[kt] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner B
   i = Nx-1; j = Ny-1; k = 0;
@@ -734,7 +736,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[kw] + \
             (kd*dx*dz/(4*dy))*M[kn] + \
             (kd*dx*dy/(4*dz))*M[kt] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner C
   i = 0;  j = Ny-1; k = Nz-1;
@@ -758,7 +760,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
             (kd*dx*dz/(4*dy))*M[kn] + \
             (kd*dx*dy/(4*dz))*M[kb] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner D
   i = Nx-1; j = Ny-1; k = Nz-1;
@@ -782,7 +784,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[kw] + \
             (kd*dx*dz/(4*dy))*M[kn] + \
             (kd*dx*dy/(4*dz))*M[kb] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner E
   i = 0; j = 0; k = 0;
@@ -806,7 +808,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
             (kd*dx*dz/(4*dy))*M[ks] + \
             (kd*dx*dy/(4*dz))*M[kt] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner F
   i = Nx-1; j = 0; k = 0;
@@ -830,7 +832,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[kw] + \
             (kd*dx*dz/(4*dy))*M[ks] + \
             (kd*dx*dy/(4*dz))*M[kt] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner G
   i = 0; j = 0; k = Nz-1;
@@ -854,7 +856,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[ke] + \
             (kd*dx*dz/(4*dy))*M[ks] + \
             (kd*dx*dy/(4*dz))*M[kb] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
   // corner H
   i = Nx-1; j = 0; k = Nz-1;
@@ -878,7 +880,7 @@ void allCorners(int isConv_S, double hs, double Ts, // convection south -side
   M[kc] = ( (kd*dy*dz/(4*dx))*M[kw] + \
             (kd*dx*dz/(4*dy))*M[ks] + \
             (kd*dx*dy/(4*dz))*M[kb] + \
-            term )/denom;
+            term - denom*M[kc] )*dt + M[kc];
 
 
 }
@@ -1112,6 +1114,7 @@ void insulated(int surface)
     i.e. excluding corners and vertices.
   */
   int i, j, k, step, plane, fix;
+  double temp = 0.0;
   assert(surface == 0 || surface == 1 || \
          surface == 2 || surface == 3 || \
          surface == 4 || surface == 5 );
@@ -1146,7 +1149,8 @@ void insulated(int surface)
       step = (i == 0)   ? 1 : -1;
       for (k=1; k<Nz-1; k++){
         for (j=1; j<Ny-1; j++){
-          M[Nx*Ny*k+j*Nx+i] = M[Nx*Ny*k+j*Nx+i+step];
+          temp = M[Nx*Ny*k+j*Nx+i+step] - M[Nx*Ny*k+j*Nx+i];
+          M[Nx*Ny*k+j*Nx+i] += 2.0*kd*dt*temp/(dx*dx);
         }
       }
       break;
@@ -1156,7 +1160,8 @@ void insulated(int surface)
       step = (j == 0)   ? 1 : -1;
       for (k=1; k<Nz-1; k++){
         for (i=1; i<Nx-1; i++){
-          M[Nx*Ny*k+j*Nx+i] = M[Nx*Ny*k+(j+step)*Nx+i];
+          temp = M[Nx*Ny*k+(j+step)*Nx+i] - M[Nx*Ny*k+j*Nx+i];
+          M[Nx*Ny*k+j*Nx+i] += 2.0*kd*dt*temp/(dy*dy);
         }
       }
       break;
@@ -1166,7 +1171,8 @@ void insulated(int surface)
       step = (k == 0)   ? 1 : -1;
       for (j=1; j<Ny-1; j++){
         for (i=1; i<Nx-1; i++){
-          M[Nx*Ny*k+j*Nx+i] = M[Nx*Ny*(k+step)+j*Nx+i];
+          temp = M[Nx*Ny*(k+step)+j*Nx+i] - M[Nx*Ny*k+j*Nx+i];
+          M[Nx*Ny*k+j*Nx+i] += 2.0*kd*dt*temp/(dz*dz);
         }
       }
       break;

@@ -19,16 +19,7 @@
 #define _FUNCS_H
 
 
-void GS(void);
-
 void SOR(void);
 
-void MG(void);
-
-void CG(void);
-
-void FEM(void);
-
-void DS(void);
 
 #endif

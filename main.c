@@ -22,13 +22,10 @@
 
 int main(int argc, char **argv){
 
-  /* input solver choise */
-  int solver = atoi(argv[1]);
 
-
-  Nx = 5;
-  Ny = 5;
-  Nz = 5;
+  Nx = 50;
+  Ny = 50;
+  Nz = 50;
 
   rho = 1.0;
   Ch  = 1.0;
@@ -77,36 +74,9 @@ int main(int argc, char **argv){
   initialize();
   boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
-  switch(solver){
-    // use Gauss-Seidel
-    case 0:
-      GS();
-      break;
+  // iterate via Successive Over-Relaxation
+  SOR();
 
-    // use Successive Over-Relaxation
-    case 1:
-      SOR();
-      break;
-
-    // use conjugate gradient
-    case 2:
-      CG();
-      break;
-
-    // use multigrid
-    case 3:
-      MG();
-      break;
-
-    // use FEM
-    case 4:
-      FEM();
-      break;
-
-    // default - gauss elimination
-    default:
-      DS();
-  }
 
   FILE *f = fopen("file.txt", "w");
   if (f == NULL){

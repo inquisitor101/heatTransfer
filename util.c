@@ -151,7 +151,7 @@ void initialize(void)
 void boundary(int condition[6], double h[6],
               double Tsurr[6], double temp[6])
 {
-  /*
+/*
     stencil kernel:
 
                                (T)   (N)
@@ -175,7 +175,7 @@ void boundary(int condition[6], double h[6],
                      /
                   (+j)
 
-  */
+*/
 
 #define convection 1  // convection+conduction boundary
 #define insulation 2  // insulation boundary
@@ -231,11 +231,90 @@ void boundary(int condition[6], double h[6],
 
 
 void heatGeneration(int geometry, double heatGen,
-                    double length, double width, double height,
-                    double posX, double posY, double posZ)
+                    double posX, double posY, double posZ,
+                    double length, double width, double height)
 {
-#define CUBE    0
-#define SPHERE  1
+/*
+  INPUT
+
+    geometry : <#>
+                0 : cube/box
+                1 : sphere/ellipsoidal
+
+    heatGen  : <#>
+                # : source's heat generation value -- constant
+
+    posX     : <#>
+                0.0-1.0 : relative position from cube origin -- ith sense
+
+    posY     : <#>
+                0.0-1.0 : relative position from cube origin -- jth sense
+
+    posZ     : <#>
+                0.0-1.0 : relative position from cube origin -- kth sense
+
+    length   : <#>
+                # : source's length in the ith sense from it's center
+
+    width    : <#>
+                # : source's length in the jth sense from it's center
+
+    height   : <#>
+                # : source's length in the kth sense from it's center
+
+
+    refer to figure below for clarification,
+
+
+
+    //
+    orientation and source (w.r.t. overall cube):
+
+
+                ^  (+k)
+                |
+                |
+                |
+                |                      (height)      (width)
+                |
+                |                             |   /
+                |                             | /
+                |            (length)  ------ O ------  (length)
+                |                           / |
+                |                         /   |
+                |
+                |                (width)      (height)
+                |
+                |
+                |
+                o -----------------------------------------> (+i)
+               /
+              /
+             /
+            /
+           /
+          /
+       (+j)
+
+*/
+  int i, j, k;
+#define CUBE    0   // cube or box
+#define SPHERE  1   // sphere or ellipsoidal
+
+  switch(geometry){
+
+    case(0):
+      // fill me up ...
+      break;
+
+    case(1):
+      // fill me up ...
+      break;
+
+    default:
+      printf("\nWrong input geometry of choice in function 'heatGeneration', %d", geometry);
+      exit(1);
+  }
 
 }
 

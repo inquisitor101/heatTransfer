@@ -267,10 +267,6 @@ void heatGeneration(int geometry, double heatGen,
 
 
 
-    //
-    orientation and source (w.r.t. overall cube):
-
-
                 ^  (+k)
                 |
                 |
@@ -296,6 +292,8 @@ void heatGeneration(int geometry, double heatGen,
           /
        (+j)
 
+  orientation and source (w.r.t. overall cube)
+  
 */
   int i, j, k;
 #define CUBE    0   // cube or box

@@ -205,8 +205,7 @@ void boundary(int condition[6], double h[6],
 
   }
 
-  // @FIXME: insulation should is maybe surface with h=0 ? -- just conduction!?
-  //
+
   allCorners(isConv[4], h[4], Tsurr[4],    // convection south -side
              isConv[5], h[5], Tsurr[5],    // convection north -side
              isConv[3], h[3], Tsurr[3],    // convection west  -side
@@ -227,6 +226,16 @@ void boundary(int condition[6], double h[6],
 
   // @IDEA:
   //       heat generation function
+
+}
+
+
+void heatGeneration(int geometry, double heatGen,
+                    double length, double width, double height,
+                    double posX, double posY, double posZ)
+{
+#define CUBE    0
+#define SPHERE  1
 
 }
 

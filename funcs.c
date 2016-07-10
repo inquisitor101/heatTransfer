@@ -22,13 +22,14 @@
 
 void SOR(void)
 {
-  double sum, err = 1.0, TOL = 1e-3, w = 1.9;
-  int i, j, k, iter = 0, maxIter = 1000;
+  double sum, err = 1.0, TOL = 1e-6, w = 1.9;
+  int i, j, k, iter = 0, maxIter = simulationTime;
   int kc, kn, ks, kt, kb, ke, kw;
   double Cx = kd*dt/(dx*dx);
   double Cy = kd*dt/(dy*dy);
   double Cz = kd*dt/(dz*dz);
   double Cc = 2*kd*dt*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) );
+  double Cs = dt;//*dx*dy*dz; @FIXME needs checking ??? ------------------------------------------
 
   double *Mold = (double *)calloc(Nx*Ny*Nz, sizeof(double));
   memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));
@@ -45,15 +46,16 @@ void SOR(void)
           M[kc] = w*( Cx*( M[ke] + M[kw] ) \
                     + Cy*( M[ks] + M[kn] ) \
                     + Cz*( M[kt] + M[kb] ) \
+                     + Cs*sourceGen(i,j,k) \
                       + (1.0 - Cc)*M[kc] ) \
                       + (1.0 - w )*M[kc];
         }
       }
     }
 
-    //boundary(boundCond, h_conv, Tsurr, fixedTemp);
+    boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
-    if (iter%10 == 0){
+    if (iter%50 == 0){
       // calculate norm of error
       sum = 0.0;
       for (k=0; k<Nz; k++){

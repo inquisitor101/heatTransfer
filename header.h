@@ -39,5 +39,7 @@ double Lx, Ly, Lz;
 int isSourceTerm;
 double posX, posY, posZ;
 double length, width, height;
+int x0, x1, y0, y1, z0, z1;
+double Tsource, simulationTime;
 
 #endif

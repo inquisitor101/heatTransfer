@@ -21,14 +21,25 @@
 
 void initialize(void)
 {
-  int i, j, k;
+  int i, j, k; double temp = 273.15+25;
   M = (double *)calloc(Nx*Ny*Nz, sizeof(double));
 
   // fill average inner values
-  for (k=1; k<Nz-1; k++){
-    for (j=1; j<Ny-1; j++){
-      for (i=1; i<Nx-1; i++){
-        M[Nx*Ny*k+j*Nx+i] = 273.15+25; // Kelvin
+  if (isSourceTerm){ // source term
+    for (k=1; k<Nz-1; k++){
+      for (j=1; j<Ny-1; j++){
+        for (i=1; i<Nx-1; i++){
+          M[Nx*Ny*k+j*Nx+i] = temp + sourceGen(i, j, k); // Kelvin
+        }
+      }
+    }
+  }
+  else { // no source term
+    for (k=1; k<Nz-1; k++){
+      for (j=1; j<Ny-1; j++){
+        for (i=1; i<Nx-1; i++){
+          M[Nx*Ny*k+j*Nx+i] = temp; // Kelvin
+        }
       }
     }
   }
@@ -126,6 +137,10 @@ void initialize(void)
   i = 0; j = Ny-1;
   for (k=0; k<Nz; k++){
     M[Nx*Ny*k+j*Nx+i] = (M[Nx*Ny*k+j*Nx+i+1] + M[Nx*Ny*k+(j-1)*Nx+i])/2.0;
+  }
+
+  if (isSourceTerm){
+    heatGeneration(0);
   }
 
   // check output
@@ -231,12 +246,10 @@ void boundary(int condition[6], double h[6],
 
 // @IDEA : consider changing void to double and adding inline ??
 //
-void heatGeneration(int geometry, double heatGen,
-                    double posX, double posY, double posZ,
-                    double length, double width, double height)
+void heatGeneration(int geometry)
 {
 /*
-  INPUT
+  Dependant upon:
 
     geometry : <#>
                 0 : cube/box
@@ -296,34 +309,30 @@ void heatGeneration(int geometry, double heatGen,
   orientation and source (w.r.t. overall cube)
 
 */
-  int i, j, k;
-  double x0, x1, y0, y1, z0, z1;
   int Cx, Cy, Cz;
 
 #define CUBE    0   // cube or box
 #define SPHERE  1   // sphere or ellipsoidal
 
-  assert(posX > 1 && posX < Nx-1);
-  assert(posY > 1 && posY < Ny-1);
-  assert(posZ > 1 && posZ < Nz-1);
+  assert(posX > 0.0 && posX < Lx);
+  assert(posY > 0.0 && posY < Ly);
+  assert(posZ > 0.0 && posZ < Lz);
 
   Cx = round(Nx*posX);  // center of source geometry in ith sense
   Cy = round(Ny*posY);  // center of source geometry in jth sense
   Cz = round(Nz*posZ);  // center of source geometry in kth sense
 
-  x0 = Cx-length; x1 = Cx+length;
-  y0 = Cy-width;  y1 = Cy+width;
-  z0 = Cz-height; z1 = Cz+height;
-
-  assert( x0 > 0 && x1 < Nx );
-  assert( y0 > 0 && y1 < Ny );
-  assert( z0 > 0 && z1 < Nz );
-
-
   switch(geometry){
 
     case(CUBE):
       // fill me up ...
+      x0 = Cx-round(length*Nx); x1 = Cx+round(length*Nx);
+      y0 = Cy- round(width*Ny); y1 = Cy+ round(width*Ny);
+      z0 = Cz-round(height*Nz); z1 = Cz+round(height*Nz);
+
+      assert( x0 > 0 && x1 < Nx );
+      assert( y0 > 0 && y1 < Ny );
+      assert( z0 > 0 && z1 < Nz );
       break;
 
     case(SPHERE):

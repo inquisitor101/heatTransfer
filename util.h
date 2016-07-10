@@ -23,6 +23,8 @@ void initialize(void);
 
 void insulated(int surface);
 
+void heatGeneration(int geometry);
+
 void Dirichlet(int surface, double value);
 
 void surface(int surface, double h, double Tsurr);
@@ -44,5 +46,73 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
                  int isConv_E, double he, double Te, // convection east  -side
                  int isConv_T, double ht, double Tt, // convection top   -side
                  int isConv_B, double hb, double Tb);// convection bottom-side
+//
+static inline double sourceGen(int x, int y, int z)
+{
+/*
+  Dependant upon:
+
+    geometry : <#>
+                0 : cube/box
+                1 : sphere/ellipsoidal
+
+    heatGen  : <#>
+                # : source's heat generation value -- constant
+
+    posX     : <#>
+                0.0-1.0 : relative position from cube origin -- ith sense
+
+    posY     : <#>
+                0.0-1.0 : relative position from cube origin -- jth sense
+
+    posZ     : <#>
+                0.0-1.0 : relative position from cube origin -- kth sense
+
+    length   : <#>
+                # : source's length in the ith sense from it's center
+
+    width    : <#>
+                # : source's length in the jth sense from it's center
+
+    height   : <#>
+                # : source's length in the kth sense from it's center
+
+
+    refer to figure below for clarification,
+
+
+
+                ^  (+k)
+                |
+                |
+                |
+                |                      (height)      (width)
+                |
+                |                             |   /
+                |                             | /
+                |            (length)  ------ O ------  (length)
+                |                           / |
+                |                         /   |
+                |
+                |                (width)      (height)
+                |
+                |
+                |
+                o -----------------------------------------> (+i)
+               /
+              /
+             /
+            /
+           /
+          /
+       (+j)
+
+  orientation and source (w.r.t. overall cube)
+
+*/
+  double gen = (x>x0 && x<x1 && y>y0 && y<y1 && z>z0 && z<z1) ? Tsource  : 0.0;
+
+  return gen;
+}
 
 #endif

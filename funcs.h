@@ -21,5 +21,4 @@
 
 void SOR(void);
 
-
 #endif

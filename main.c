@@ -26,6 +26,7 @@ int main(int argc, char **argv){
   Nx = 50;  Lx = 1.0;
   Ny = 50;  Ly = 1.0;
   Nz = 50;  Lz = 1.0;
+  simulationTime = 1000; // total time steps
 
   rho = 1.0;
   Ch  = 1.0;
@@ -40,7 +41,7 @@ int main(int argc, char **argv){
   posX = 0.5; length = 0.1;
   posY = 0.5; width  = 0.1;
   posZ = 0.5; height = 0.1;
-
+  Tsource = 273.15+100.0; // Kelvin
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1, convection/free, 2: insulation, 3: Dirichlet
@@ -65,7 +66,7 @@ int main(int argc, char **argv){
   Tsurr[0] = 273.15+25; // T
   Tsurr[1] = 273.15+25; // B
   Tsurr[2] = 273.15+25; // E
-  Tsurr[3] = 273.15+0 ; // W
+  Tsurr[3] = 273.15+00; // W
   Tsurr[4] = 273.15+25; // S
   Tsurr[5] = 273.15+25; // N
 
@@ -77,6 +78,7 @@ int main(int argc, char **argv){
   fixedTemp[3] = 273.15+25; // W
   fixedTemp[4] = 273.15+25; // S
   fixedTemp[5] = 273.15+25; // N
+
 
   initialize();
   boundary(boundCond, h_conv, Tsurr, fixedTemp);

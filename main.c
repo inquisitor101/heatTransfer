@@ -23,17 +23,24 @@
 int main(int argc, char **argv){
 
 
-  Nx = 50;
-  Ny = 50;
-  Nz = 50;
+  Nx = 50;  Lx = 1.0;
+  Ny = 50;  Ly = 1.0;
+  Nz = 50;  Lz = 1.0;
 
   rho = 1.0;
   Ch  = 1.0;
   kd  = 1.0/(rho*Ch);
-  dx  = 1.0/(Nx-1);
-  dy  = 1.0/(Ny-1);
-  dz  = 1.0/(Nz-1);
+  dx  = Lx/(Nx-1);
+  dy  = Ly/(Ny-1);
+  dz  = Lz/(Nz-1);
   dt  = 0.00001;
+
+  // source term
+  isSourceTerm = 1;
+  posX = 0.5; length = 0.1;
+  posY = 0.5; width  = 0.1;
+  posZ = 0.5; height = 0.1;
+
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1, convection/free, 2: insulation, 3: Dirichlet

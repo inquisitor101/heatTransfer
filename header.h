@@ -34,5 +34,10 @@ int boundCond[6];
 double h_conv[6];
 double Tsurr[6];
 double fixedTemp[6];
+double Lx, Ly, Lz;
+
+int isSourceTerm;
+double posX, posY, posZ;
+double length, width, height;
 
 #endif

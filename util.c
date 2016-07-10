@@ -229,7 +229,8 @@ void boundary(int condition[6], double h[6],
 
 }
 
-
+// @IDEA : consider changing void to double and adding inline ??
+//
 void heatGeneration(int geometry, double heatGen,
                     double posX, double posY, double posZ,
                     double length, double width, double height)
@@ -293,19 +294,39 @@ void heatGeneration(int geometry, double heatGen,
        (+j)
 
   orientation and source (w.r.t. overall cube)
-  
+
 */
   int i, j, k;
+  double x0, x1, y0, y1, z0, z1;
+  int Cx, Cy, Cz;
+
 #define CUBE    0   // cube or box
 #define SPHERE  1   // sphere or ellipsoidal
 
+  assert(posX > 1 && posX < Nx-1);
+  assert(posY > 1 && posY < Ny-1);
+  assert(posZ > 1 && posZ < Nz-1);
+
+  Cx = round(Nx*posX);  // center of source geometry in ith sense
+  Cy = round(Ny*posY);  // center of source geometry in jth sense
+  Cz = round(Nz*posZ);  // center of source geometry in kth sense
+
+  x0 = Cx-length; x1 = Cx+length;
+  y0 = Cy-width;  y1 = Cy+width;
+  z0 = Cz-height; z1 = Cz+height;
+
+  assert( x0 > 0 && x1 < Nx );
+  assert( y0 > 0 && y1 < Ny );
+  assert( z0 > 0 && z1 < Nz );
+
+
   switch(geometry){
 
-    case(0):
+    case(CUBE):
       // fill me up ...
       break;
 
-    case(1):
+    case(SPHERE):
       // fill me up ...
       break;
 

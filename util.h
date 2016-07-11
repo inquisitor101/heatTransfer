@@ -23,7 +23,7 @@ void initialize(void);
 
 void insulated(int surface);
 
-void heatGeneration(int geometry);
+void heatGeneration(void);
 
 void Dirichlet(int surface, double value);
 
@@ -46,7 +46,8 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
                  int isConv_E, double he, double Te, // convection east  -side
                  int isConv_T, double ht, double Tt, // convection top   -side
                  int isConv_B, double hb, double Tb);// convection bottom-side
-//
+
+
 static inline double sourceGen(int x, int y, int z)
 {
 /*
@@ -110,7 +111,11 @@ static inline double sourceGen(int x, int y, int z)
   orientation and source (w.r.t. overall cube)
 
 */
-  double gen = (x>x0 && x<x1 && y>y0 && y<y1 && z>z0 && z<z1) ? Tsource  : 0.0;
+
+  // @TODO: add an if/else statement for regular (box) or irregular (sphere) source
+  //
+  
+  double gen = (x>x0 && x<x1 && y>y0 && y<y1 && z>z0 && z<z1) ? genHeat  : 0.0; // units: W/m3
 
   return gen;
 }

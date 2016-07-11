@@ -29,7 +29,7 @@ void SOR(void)
   double Cy = kd*dt/(dy*dy);
   double Cz = kd*dt/(dz*dz);
   double Cc = 2*kd*dt*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) );
-  double Cs = dt;//*dx*dy*dz; @FIXME needs checking ??? ------------------------------------------
+  double Cs = dt/(rho*Ch); // this transforms (W/m3) into (Kelvin) 
 
   double *Mold = (double *)calloc(Nx*Ny*Nz, sizeof(double));
   memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));

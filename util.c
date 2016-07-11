@@ -29,7 +29,7 @@ void initialize(void)
     for (k=1; k<Nz-1; k++){
       for (j=1; j<Ny-1; j++){
         for (i=1; i<Nx-1; i++){
-          M[Nx*Ny*k+j*Nx+i] = temp + sourceGen(i, j, k); // Kelvin
+          M[Nx*Ny*k+j*Nx+i] = temp + dt*sourceGen(i, j, k)/(rho*Ch); // Kelvin
         }
       }
     }
@@ -239,14 +239,12 @@ void boundary(int condition[6], double h[6],
   // @IDEA:
   //       radiation function
 
-  // @IDEA:
-  //       heat generation function
 
 }
 
 // @IDEA : consider changing void to double and adding inline ??
 //
-void heatGeneration(int geometry)
+void heatGeneration(void)
 {
 /*
   Dependant upon:
@@ -311,9 +309,6 @@ void heatGeneration(int geometry)
 */
   int Cx, Cy, Cz;
 
-#define CUBE    0   // cube or box
-#define SPHERE  1   // sphere or ellipsoidal
-
   assert(posX > 0.0 && posX < Lx);
   assert(posY > 0.0 && posY < Ly);
   assert(posZ > 0.0 && posZ < Lz);
@@ -322,27 +317,13 @@ void heatGeneration(int geometry)
   Cy = round(Ny*posY);  // center of source geometry in jth sense
   Cz = round(Nz*posZ);  // center of source geometry in kth sense
 
-  switch(geometry){
+  x0 = Cx-round(length*Nx); x1 = Cx+round(length*Nx);
+  y0 = Cy- round(width*Ny); y1 = Cy+ round(width*Ny);
+  z0 = Cz-round(height*Nz); z1 = Cz+round(height*Nz);
 
-    case(CUBE):
-      // fill me up ...
-      x0 = Cx-round(length*Nx); x1 = Cx+round(length*Nx);
-      y0 = Cy- round(width*Ny); y1 = Cy+ round(width*Ny);
-      z0 = Cz-round(height*Nz); z1 = Cz+round(height*Nz);
-
-      assert( x0 > 0 && x1 < Nx );
-      assert( y0 > 0 && y1 < Ny );
-      assert( z0 > 0 && z1 < Nz );
-      break;
-
-    case(SPHERE):
-      // fill me up ...
-      break;
-
-    default:
-      printf("\nWrong input geometry of choice in function 'heatGeneration', %d", geometry);
-      exit(1);
-  }
+  assert( x0 > 0 && x1 < Nx );
+  assert( y0 > 0 && y1 < Ny );
+  assert( z0 > 0 && z1 < Nz );
 
 }
 

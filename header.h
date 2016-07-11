@@ -36,10 +36,10 @@ double Tsurr[6];
 double fixedTemp[6];
 double Lx, Ly, Lz;
 
-int isSourceTerm;
+int isSourceTerm, isRegular;
 double posX, posY, posZ;
 double length, width, height;
 int x0, x1, y0, y1, z0, z1;
-double Tsource, simulationTime;
+double genHeat, simulationTime;
 
 #endif

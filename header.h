@@ -29,6 +29,8 @@
 #define isRegular 0
 #define isSourceTerm 1
 
+// @TODO: check which constants can be macros or 'const'
+//
 int Nx, Ny, Nz; // discretization points per axis
 double dx, dy, dz, dt, kd, Ch, rho;
 double *M;
@@ -44,4 +46,5 @@ double length, width, height;
 int x0, x1, y0, y1, z0, z1;
 double genHeat, simulationTime;
 
+double sigma, ems; // radiation constants
 #endif

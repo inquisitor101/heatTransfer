@@ -264,8 +264,7 @@ void boundary(int condition[6], double h[6],
 
 }
 
-// @IDEA : consider changing void to double and adding inline ??
-//
+
 void heatGeneration(void)
 {
 /*

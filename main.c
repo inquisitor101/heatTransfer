@@ -31,8 +31,10 @@ int main(int argc, char **argv){
   Nz = 50;  Lz = 10.0; // meters
   simulationTime = 1000; // total time steps
 
-  rho = 1.0;
-  Ch  = 1.0;
+  // @FIXME: needs fixing, debug : rho & Ch
+  //
+  rho = 1.0;//2400.0; // units: Kg/m3
+  Ch  = 1.0;//750.0; // units: J/(K.Kg)
   kd  = 1.0/(rho*Ch);
   dx  = Lx/(Nx-1);
   dy  = Ly/(Ny-1);
@@ -40,10 +42,14 @@ int main(int argc, char **argv){
   dt  = 0.00001; // seconds
 
   // source term and geometry
-  posX = 0.5; length = 0.45; // unitless -- relative
-  posY = 0.5; width  = 0.45; // unitless -- relative
-  posZ = 0.5; height = 0.45; // unitless -- relative
+  posX = 0.5; length = 0.2; // unitless -- relative
+  posY = 0.5; width  = 0.2; // unitless -- relative
+  posZ = 0.5; height = 0.2; // unitless -- relative
   genHeat = 1000.0; // units: W/m3
+
+  // radiation terms
+  sigma = 5.67e-8; // units: W/(m2.K4)
+  ems = 0.91; // concrete (rough)
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1: convection/free, 2: insulation, 3: Dirichlet

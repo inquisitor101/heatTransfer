@@ -25,7 +25,11 @@ void initialize(void)
   M = (double *)calloc(Nx*Ny*Nz, sizeof(double));
 
   // fill average inner values
-  if (isSourceTerm){ // source term
+  // if (isSourceTerm){ // source term
+#if isSourceTerm
+  // heat source exists
+  #if isRegular
+  // box-shaped geometry
     for (k=1; k<Nz-1; k++){
       for (j=1; j<Ny-1; j++){
         for (i=1; i<Nx-1; i++){
@@ -33,16 +37,30 @@ void initialize(void)
         }
       }
     }
-  }
-  else { // no source term
+
+  #else
+  // sphere-shaped geometry
+  // box-shaped geometry
     for (k=1; k<Nz-1; k++){
       for (j=1; j<Ny-1; j++){
         for (i=1; i<Nx-1; i++){
-          M[Nx*Ny*k+j*Nx+i] = temp; // Kelvin
+          M[Nx*Ny*k+j*Nx+i] = temp + dt*sourceGenIrreg(i, j, k)/(rho*Ch); // Kelvin
         }
       }
     }
+  #endif
+
+#else
+  // no heat source(s)
+  for (k=1; k<Nz-1; k++){
+    for (j=1; j<Ny-1; j++){
+      for (i=1; i<Nx-1; i++){
+        M[Nx*Ny*k+j*Nx+i] = temp; // Kelvin
+      }
+    }
   }
+
+#endif
 
   // boundary: top surface
   k = Nz-1;
@@ -139,15 +157,14 @@ void initialize(void)
     M[Nx*Ny*k+j*Nx+i] = (M[Nx*Ny*k+j*Nx+i+1] + M[Nx*Ny*k+(j-1)*Nx+i])/2.0;
   }
 
-  if (isSourceTerm){
+#if isSourceTerm
     heatGeneration();
-  }
+#endif
 
-  assert(isRegular == 0 || isRegular == 1);
 
-  if (isRegular == 0)
-    assert(length == width && length == height);
-
+#if isRegular
+  assert(length == width && length == height);
+#endif
   // check output
   char checkOUT = 0;
   if (checkOUT){

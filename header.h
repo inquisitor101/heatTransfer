@@ -26,6 +26,9 @@
 #include <string.h>
 #include <assert.h>
 
+#define isRegular 0
+#define isSourceTerm 1
+
 int Nx, Ny, Nz; // discretization points per axis
 double dx, dy, dz, dt, kd, Ch, rho;
 double *M;
@@ -36,7 +39,6 @@ double Tsurr[6];
 double fixedTemp[6];
 double Lx, Ly, Lz;
 
-int isSourceTerm, isRegular;
 double posX, posY, posZ;
 double length, width, height;
 int x0, x1, y0, y1, z0, z1;

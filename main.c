@@ -15,6 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+// #define isRegular 1
+// #define isSourceTerm 1
+
 #include "header.h"
 #include "funcs.h"
 #include "util.h"
@@ -23,9 +26,9 @@
 int main(int argc, char **argv){
 
 
-  Nx = 50;  Lx = 2.0; // meters
-  Ny = 50;  Ly = 2.0; // meters
-  Nz = 50;  Lz = 2.0; // meters
+  Nx = 50;  Lx = 10.0; // meters
+  Ny = 50;  Ly = 10.0; // meters
+  Nz = 50;  Lz = 10.0; // meters
   simulationTime = 1000; // total time steps
 
   rho = 1.0;
@@ -37,18 +40,17 @@ int main(int argc, char **argv){
   dt  = 0.00001; // seconds
 
   // source term and geometry
-  isSourceTerm = 1; isRegular = 0;
-  posX = 0.5; length = 0.1; // unitless -- relative
-  posY = 0.5; width  = 0.1; // unitless -- relative
-  posZ = 0.5; height = 0.1; // unitless -- relative
-  genHeat = 10000.0; // units: W/m3
+  posX = 0.5; length = 0.45; // unitless -- relative
+  posY = 0.5; width  = 0.45; // unitless -- relative
+  posZ = 0.5; height = 0.45; // unitless -- relative
+  genHeat = 1000.0; // units: W/m3
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1: convection/free, 2: insulation, 3: Dirichlet
   boundCond[0] = 2; // T
   boundCond[1] = 2; // B
-  boundCond[2] = 2; // E
-  boundCond[3] = 2; // W
+  boundCond[2] = 1; // E
+  boundCond[3] = 1; // W
   boundCond[4] = 2; // S
   boundCond[5] = 2; // N
 

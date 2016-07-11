@@ -112,9 +112,6 @@ static inline double sourceGen(int x, int y, int z)
 
 */
 
-  // @TODO: add an if/else statement for regular (box) or irregular (sphere) source
-  //
-  
   double gen = (x>x0 && x<x1 && y>y0 && y<y1 && z>z0 && z<z1) ? genHeat  : 0.0; // units: W/m3
 
   return gen;

@@ -140,8 +140,13 @@ void initialize(void)
   }
 
   if (isSourceTerm){
-    heatGeneration(0);
+    heatGeneration();
   }
+
+  assert(isRegular == 0 || isRegular == 1);
+
+  if (isRegular == 0)
+    assert(length == width && length == height);
 
   // check output
   char checkOUT = 0;
@@ -309,9 +314,9 @@ void heatGeneration(void)
 */
   int Cx, Cy, Cz;
 
-  assert(posX > 0.0 && posX < Lx);
-  assert(posY > 0.0 && posY < Ly);
-  assert(posZ > 0.0 && posZ < Lz);
+  assert(posX > 0.0 && posX < 1.0);
+  assert(posY > 0.0 && posY < 1.0);
+  assert(posZ > 0.0 && posZ < 1.0);
 
   Cx = round(Nx*posX);  // center of source geometry in ith sense
   Cy = round(Ny*posY);  // center of source geometry in jth sense

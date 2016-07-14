@@ -242,13 +242,10 @@ void boundary(int condition[6], double h[6],
 
   }
 
-
-  allCorners(isConv[4], h[4], Tsurr[4],    // convection south -side
-             isConv[5], h[5], Tsurr[5],    // convection north -side
-             isConv[3], h[3], Tsurr[3],    // convection west  -side
-             isConv[2], h[2], Tsurr[2],    // convection east  -side
-             isConv[0], h[0], Tsurr[0],    // convection top   -side
-             isConv[1], h[1], Tsurr[1] );  // convection bottom-side
+  // @FIXME : debug corner and vertex functions ...
+  //
+  // @NOTE: prob seems in 'allVertices', model equations seems wrong -- redo !! 
+  //
 
   allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
               isConv[5], h[5], Tsurr[5],   // convection north -side
@@ -257,6 +254,12 @@ void boundary(int condition[6], double h[6],
               isConv[0], h[0], Tsurr[0],   // convection top   -side
               isConv[1], h[1], Tsurr[1] ); // convection bottom-side
 
+  allCorners(isConv[4], h[4], Tsurr[4],    // convection south -side
+             isConv[5], h[5], Tsurr[5],    // convection north -side
+             isConv[3], h[3], Tsurr[3],    // convection west  -side
+             isConv[2], h[2], Tsurr[2],    // convection east  -side
+             isConv[0], h[0], Tsurr[0],    // convection top   -side
+             isConv[1], h[1], Tsurr[1] );  // convection bottom-side
 // ---------------------------------------------------------------------
   // @IDEA:
   //       radiation function
@@ -412,9 +415,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 1
   i = 0; j = Ny-1;
 
-  coef1 = kd*dy*dz/(2*dx);
-  coef2 = kd*dx*dz/(2*dy);
-  coef3 = kd*dx*dy/(4*dz);
+  coef1 = kd*dy*dz/2.0;
+  coef2 = kd*dx*dz/2.0;
+  coef3 = kd*dx*dy/4.0;
 
   term = 0.0;
   term += (isConv_S)  ? hs*dx*dz*Ts/(2*Ch*rho)  : 0.0;
@@ -436,13 +439,18 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
               coef3*M[kb] + \
               coef3*M[kt] + \
               term - denom*M[kc] )*dt + M[kc];
+              // debugging --------------------------------------------------------------------------------------------
+              printf("\nv1 -- ke= %f, kn: %f, kb: %f, kt: %f, kc: %f",\
+                              M[ke]-273.15, M[kn]-273.15, M[kb]-273.15, M[kt]-273.15, M[kc]-273.15);
+                              printf("\nval: %e", denom);
+              // debugging --------------------------------------------------------------------------------------------
   }
   // vertex 2
   j = Ny-1; k = 0;
 
-  coef1 = kd*dy*dz/(4*dx);
-  coef2 = kd*dz*dx/(2*dy);
-  coef3 = kd*dy*dx/(2*dz);
+  coef1 = kd*dy*dz/4.0;
+  coef2 = kd*dz*dx/2.0;
+  coef3 = kd*dy*dx/2.0;
 
   term = 0.0;
   term += (isConv_S)  ? hs*dz*dx*Ts/(2*Ch*rho)  : 0.0;
@@ -468,9 +476,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 3
   i = Nx-1; j = Ny-1;
 
-  coef1 = kd*dy*dz/(2*dx);
-  coef2 = kd*dx*dz/(2*dy);
-  coef3 = kd*dx*dy/(4*dz);
+  coef1 = kd*dy*dz/2.0;
+  coef2 = kd*dx*dz/2.0;
+  coef3 = kd*dx*dy/4.0;
 
   term = 0.0;
   term += (isConv_S)  ? hs*dx*dz*Ts/(2*Ch*rho)  : 0.0;
@@ -496,9 +504,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 4
   j = Ny-1; k = Nz-1;
 
-  coef1 = kd*dy*dz/(4*dx);
-  coef2 = kd*dz*dx/(2*dy);
-  coef3 = kd*dy*dx/(2*dz);
+  coef1 = kd*dy*dz/4.0;
+  coef2 = kd*dz*dx/2.0;
+  coef3 = kd*dy*dx/2.0;
 
   term = 0.0;
   term += (isConv_S)  ? hs*dz*dx*Ts/(2*Ch*rho)  : 0.0;
@@ -524,9 +532,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 5
   i = 0; k = 0;
 
-  coef1 = kd*dz*dy/(2*dx);
-  coef2 = kd*dx*dz/(4*dy);
-  coef3 = kd*dx*dy/(2*dz);
+  coef1 = kd*dz*dy/2.0;
+  coef2 = kd*dx*dz/4.0;
+  coef3 = kd*dx*dy/2.0;
 
   term = 0.0;
   term += (isConv_W)  ? hw*dz*dy*Tw/(2*Ch*rho)  : 0.0;
@@ -552,9 +560,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 6
   i = Nx-1; k = 0;
 
-  coef1 = kd*dz*dy/(2*dx);
-  coef2 = kd*dx*dz/(4*dy);
-  coef3 = kd*dx*dy/(2*dz);
+  coef1 = kd*dz*dy/2.0;
+  coef2 = kd*dx*dz/4.0;
+  coef3 = kd*dx*dy/2.0;
 
   term = 0.0;
   term += (isConv_E)  ? he*dz*dy*Te/(2*Ch*rho)  : 0.0;
@@ -580,9 +588,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 7
   i = Nx-1; k = Nz-1;
 
-  coef1 = kd*dz*dy/(2*dx);
-  coef2 = kd*dx*dz/(4*dy);
-  coef3 = kd*dx*dy/(2*dz);
+  coef1 = kd*dz*dy/2.0;
+  coef2 = kd*dx*dz/4.0;
+  coef3 = kd*dx*dy/2.0;
 
   term = 0.0;
   term += (isConv_T)  ? ht*dx*dy*Tt/(2*Ch*rho)  : 0.0;
@@ -608,9 +616,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 8
   i = 0; k = Nz-1;
 
-  coef1 = kd*dz*dy/(2*dx);
-  coef2 = kd*dx*dz/(4*dy);
-  coef3 = kd*dx*dy/(2*dz);
+  coef1 = kd*dz*dy/2.0;
+  coef2 = kd*dx*dz/4.0;
+  coef3 = kd*dx*dy/2.0;
 
   term = 0.0;
   term += (isConv_W)  ? hw*dz*dy*Tw/(2*Ch*rho)  : 0.0;
@@ -636,9 +644,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 9
   i = 0; j = 0;
 
-  coef1 = kd*dy*dz/(2*dx);
-  coef2 = kd*dx*dz/(2*dy);
-  coef3 = kd*dx*dy/(4*dz);
+  coef1 = kd*dy*dz/2.0;
+  coef2 = kd*dx*dz/2.0;
+  coef3 = kd*dx*dy/4.0;
 
   term = 0.0;
   term += (isConv_N)  ? hn*dx*dz*Tn/(2*Ch*rho)  : 0.0;
@@ -664,9 +672,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 10
   j = 0; k = 0;
 
-  coef1 = kd*dy*dz/(4*dx);
-  coef2 = kd*dz*dx/(2*dy);
-  coef3 = kd*dy*dx/(2*dz);
+  coef1 = kd*dy*dz/4.0;
+  coef2 = kd*dz*dx/2.0;
+  coef3 = kd*dy*dx/2.0;
 
   term = 0.0;
   term += (isConv_N)  ? hn*dz*dx*Tn/(2*Ch*rho)  : 0.0;
@@ -692,9 +700,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 11
   i = Nx-1; j = 0;
 
-  coef1 = kd*dy*dz/(2*dx);
-  coef2 = kd*dx*dz/(2*dy);
-  coef3 = kd*dx*dy/(4*dz);
+  coef1 = kd*dy*dz/2.0;
+  coef2 = kd*dx*dz/2.0;
+  coef3 = kd*dx*dy/4.0;
 
   term = 0.0;
   term += (isConv_N)  ? hn*dx*dz*Tn/(2*Ch*rho)  : 0.0;
@@ -720,9 +728,9 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
   // vertex 12
   j = 0; k = Nz-1;
 
-  coef1 = kd*dy*dz/(4*dx);
-  coef2 = kd*dz*dx/(2*dy);
-  coef3 = kd*dy*dx/(2*dz);
+  coef1 = kd*dy*dz/4.0;
+  coef2 = kd*dz*dx/2.0;
+  coef3 = kd*dy*dx/2.0;
 
   term = 0.0;
   term += (isConv_N)  ? hn*dz*dx*Tn/(2*Ch*rho)  : 0.0;
@@ -1014,23 +1022,28 @@ void Dirichlet(int surface, double value)
 #define Y 1 //  plane perpendicular to j-axis
 #define Z 2 //  plane perpendicular to k-axis
 
-  if (surface == 0){ // case, top plane
-    plane = Z; fix = Nz-1;
-  }
-  if (surface == 1){ // case, bottom plane
-    plane = Z; fix = 0;
-  }
-  if (surface == 2){ // case, east plane
-    plane = X; fix = Nx-1;
-  }
-  if (surface == 3){ // case, west plane
-    plane = X; fix = 0;
-  }
-  if (surface == 4){ // case, south plane
-    plane = Y; fix = Ny-1;
-  }
-  if (surface == 5){ // case, north plane
-    plane = Y; fix = 0;
+  switch(surface) {
+    case(0): // case, top plane
+      plane = Z; fix = Nz-1;
+      break;
+    case(1): // case, bottom plane
+      plane = Z; fix = 0;
+      break;
+    case(2): // case, east plane
+      plane = X; fix = Nx-1;
+      break;
+    case(3): // case, west plane
+      plane = X; fix = 0;
+      break;
+    case(4): // case, south plane
+      plane = Y; fix = Ny-1;
+      break;
+    case(5): // case, north plane
+      plane = Y; fix = 0;
+      break;
+    default:
+      printf("\nWrong input in Dirichlet function %d", surface);
+      exit(1);
   }
 
   switch (plane) {
@@ -1094,23 +1107,28 @@ void surface(int surface, double h, double Tsurr)
 #define Y 1 // plane perpendicular to j-axis
 #define Z 2 // plane perpendicular to k-axis
 
-  if (surface == 0){ // case, top plane
-    plane = Z; fix = Nz-1;
-  }
-  if (surface == 1){ // case, bottom plane
-    plane = Z; fix = 0;
-  }
-  if (surface == 2){ // case, east plane
-    plane = X; fix = Nx-1;
-  }
-  if (surface == 3){ // case, west plane
-    plane = X; fix = 0;
-  }
-  if (surface == 4){ // case, south plane
-    plane = Y; fix = Ny-1;
-  }
-  if (surface == 5){ // case, north plane
-    plane = Y; fix = 0;
+  switch(surface) {
+    case(0): // case, top plane
+      plane = Z; fix = Nz-1;
+      break;
+    case(1): // case, bottom plane
+      plane = Z; fix = 0;
+      break;
+    case(2): // case, east plane
+      plane = X; fix = Nx-1;
+      break;
+    case(3): // case, west plane
+      plane = X; fix = 0;
+      break;
+    case(4): // case, south plane
+      plane = Y; fix = Ny-1;
+      break;
+    case(5): // case, north plane
+      plane = Y; fix = 0;
+      break;
+    default:
+      printf("\nWrong input in surface function %d", surface);
+      exit(1);
   }
 
   switch (plane) {
@@ -1240,23 +1258,28 @@ void insulated(int surface)
 #define Y 1  // plane perpendicular to j-axis
 #define Z 2  // plane perpendicular to k-axis
 
-  if (surface == 0){ // case, top plane
-    plane = Z; fix = Nz-1;
-  }
-  if (surface == 1){ // case, bottom plane
-    plane = Z; fix = 0;
-  }
-  if (surface == 2){ // case, east plane
-    plane = X; fix = Nx-1;
-  }
-  if (surface == 3){ // case, west plane
-    plane = X; fix = 0;
-  }
-  if (surface == 4){ // case, south plane
-    plane = Y; fix = Ny-1;
-  }
-  if (surface == 5){ // case, north plane
-    plane = Y; fix = 0;
+  switch(surface) {
+    case(0): // case, top plane
+      plane = Z; fix = Nz-1;
+      break;
+    case(1): // case, bottom plane
+      plane = Z; fix = 0;
+      break;
+    case(2): // case, east plane
+      plane = X; fix = Nx-1;
+      break;
+    case(3): // case, west plane
+      plane = X; fix = 0;
+      break;
+    case(4): // case, south plane
+      plane = Y; fix = Ny-1;
+      break;
+    case(5): // case, north plane
+      plane = Y; fix = 0;
+      break;
+    default:
+      printf("\nWrong input in insulated function %d", surface);
+      exit(1);
   }
 
   switch(plane){

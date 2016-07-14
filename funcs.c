@@ -29,58 +29,118 @@ void SOR(void)
   double Cy = kd*dt/(dy*dy);
   double Cz = kd*dt/(dz*dz);
   double Cc = 2*kd*dt*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) );
+
+#if isSourceTerm
   double Cs = dt/(rho*Ch); // this transforms (W/m3) into (Kelvin)
+#endif
 
   double *Mold = (double *)calloc(Nx*Ny*Nz, sizeof(double));
   memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));
 
-#if isRegular
-  // regular --> box
-  while (iter < maxIter && err > TOL){
+#if isSourceTerm
+  // check if source term exists
+  #if isRegular
+    // regular --> box
+    while (iter < maxIter){
 
-    for (k=1; k<Nz-1; k++){
-      for (j=1; j<Ny-1; j++){
-        for (i=1; i<Nx-1; i++){
-          kc = Nx*Ny*k+j*Nx+i;
-          kt = kc+Nx*Ny; kb = kc-Nx*Ny;
-          ks = kc+Nx;    kn = kc-Nx;
-          ke = kc+1;     kw = kc-1;
-          M[kc] = w*( Cx*( M[ke] + M[kw] ) \
-                    + Cy*( M[ks] + M[kn] ) \
-                    + Cz*( M[kt] + M[kb] ) \
-                     + Cs*sourceGen(i,j,k) \
-                      + (1.0 - Cc)*M[kc] ) \
-                      + (1.0 - w )*M[kc];
-        }
-      }
-    }
-
-    boundary(boundCond, h_conv, Tsurr, fixedTemp);
-
-    if (iter%50 == 0){
-      // calculate norm of error
-      sum = 0.0;
-      for (k=0; k<Nz; k++){
-        for (j=0; j<Ny; j++){
-          for (i=0; i<Nx; i++){
+      for (k=1; k<Nz-1; k++){
+        for (j=1; j<Ny-1; j++){
+          for (i=1; i<Nx-1; i++){
             kc = Nx*Ny*k+j*Nx+i;
-            sum += fabs(M[kc] - Mold[kc]);
+            kt = kc+Nx*Ny; kb = kc-Nx*Ny;
+            ks = kc+Nx;    kn = kc-Nx;
+            ke = kc+1;     kw = kc-1;
+            M[kc] = w*( Cx*( M[ke] + M[kw] ) \
+                      + Cy*( M[ks] + M[kn] ) \
+                      + Cz*( M[kt] + M[kb] ) \
+                       + Cs*sourceGen(i,j,k) \
+                        + (1.0 - Cc)*M[kc] ) \
+                        + (1.0 - w )*M[kc];
           }
         }
       }
-      err = sum/(Nx*Ny*Nz);
-      // update Mold
-      memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));
-      // monitor progress
-      printf("\nstep: %d out of %d, with difference: %e", iter, maxIter, err);
+
+      boundary(boundCond, h_conv, Tsurr, fixedTemp);
+
+      if (iter%50 == 0){
+        // calculate norm of error
+        sum = 0.0;
+        for (k=0; k<Nz; k++){
+          for (j=0; j<Ny; j++){
+            for (i=0; i<Nx; i++){
+              kc = Nx*Ny*k+j*Nx+i;
+              sum += fabs(M[kc] - Mold[kc]);
+            }
+          }
+        }
+        err = sum/(Nx*Ny*Nz);
+        // update Mold
+        memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));
+        // monitor progress
+        printf("\nstep: %d out of %d, with difference: %e", iter, maxIter, err);
+      }
+
+      iter++;
+      // check if steady-state is reached ?
+      if (err < TOL){
+        printf("\nSteady-state like conditions are reached.\nSimulation over.\n");
+        break;
+      }
     }
 
-    iter++;
-  }
+  #else
+    // irregular --> sphere
+    while (iter < maxIter){
+
+      for (k=1; k<Nz-1; k++){
+        for (j=1; j<Ny-1; j++){
+          for (i=1; i<Nx-1; i++){
+            kc = Nx*Ny*k+j*Nx+i;
+            kt = kc+Nx*Ny; kb = kc-Nx*Ny;
+            ks = kc+Nx;    kn = kc-Nx;
+            ke = kc+1;     kw = kc-1;
+            M[kc] = w*( Cx*( M[ke] + M[kw] ) \
+                      + Cy*( M[ks] + M[kn] ) \
+                      + Cz*( M[kt] + M[kb] ) \
+                       + Cs*sourceGenIrreg(i,j,k) \
+                        + (1.0 - Cc)*M[kc] ) \
+                        + (1.0 - w )*M[kc];
+          }
+        }
+      }
+
+      boundary(boundCond, h_conv, Tsurr, fixedTemp);
+
+      if (iter%50 == 0){
+        // calculate norm of error
+        sum = 0.0;
+        for (k=0; k<Nz; k++){
+          for (j=0; j<Ny; j++){
+            for (i=0; i<Nx; i++){
+              kc = Nx*Ny*k+j*Nx+i;
+              sum += fabs(M[kc] - Mold[kc]);
+            }
+          }
+        }
+        err = sum/(Nx*Ny*Nz);
+        // update Mold
+        memcpy(Mold, M, Nx*Ny*Nz*sizeof(double));
+        // monitor progress
+        printf("\nstep: %d out of %d, with difference: %e", iter, maxIter, err);
+      }
+
+      iter++;
+      // check if steady-state is reached ?
+      if (err < TOL){
+        printf("\nSteady-state like conditions are reached.\nSimulation over.\n");
+        break;
+      }
+    }
+  #endif
 
 #else
-  // irregular --> sphere
-  while (iter < maxIter && err > TOL){
+  // no source term
+  while (iter < maxIter){
 
     for (k=1; k<Nz-1; k++){
       for (j=1; j<Ny-1; j++){
@@ -92,7 +152,6 @@ void SOR(void)
           M[kc] = w*( Cx*( M[ke] + M[kw] ) \
                     + Cy*( M[ks] + M[kn] ) \
                     + Cz*( M[kt] + M[kb] ) \
-                     + Cs*sourceGenIrreg(i,j,k) \
                       + (1.0 - Cc)*M[kc] ) \
                       + (1.0 - w )*M[kc];
         }
@@ -120,7 +179,13 @@ void SOR(void)
     }
 
     iter++;
+    // check if steady-state is reached ?
+    if (err < TOL){
+      printf("\nSteady-state like conditions are reached.\nSimulation over.\n");
+      break;
+    }
   }
+
 #endif
 
 

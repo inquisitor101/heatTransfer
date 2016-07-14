@@ -1,6 +1,6 @@
 CC = mpicc
 LD = mpicc
-CFLAGS = -std=c99 -Wall -Werror -O0 # change -O0 to -O3
+CFLAGS = -std=c99 -Wall -Werror -O3 # change -O0 to -O3
 LDFLAGS = -lm -lmpi
 RM = /bin/rm -f
 OBJS = main.o funcs.o util.o

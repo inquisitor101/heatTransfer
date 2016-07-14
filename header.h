@@ -27,7 +27,7 @@
 #include <assert.h>
 
 #define isRegular 0
-#define isSourceTerm 1
+#define isSourceTerm 0
 
 // @TODO: check which constants can be macros or 'const'
 //
@@ -40,6 +40,7 @@ double h_conv[6];
 double Tsurr[6];
 double fixedTemp[6];
 double Lx, Ly, Lz;
+double Kcond;
 
 double posX, posY, posZ;
 double length, width, height;

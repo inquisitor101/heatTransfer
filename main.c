@@ -28,8 +28,11 @@ int main(int argc, char **argv){
 
   Nx = 5;  Lx = 1.0; // meters
   Ny = 5;  Ly = 1.0; // meters
-  Nz = 5;  Lz = 1.0; // meters
-  simulationTime = 1000; // total time steps
+  Nz = 3;  Lz = 1.0; // meters
+  simulationTime = 100; // total time steps
+
+  // SOR coefficient
+  w = 1.9;
 
   // @FIXME: needs fixing, debug : rho & Ch -- or maybe it is correct ??
   //

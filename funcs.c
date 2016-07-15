@@ -22,7 +22,7 @@
 
 void SOR(void)
 {
-  double sum, err = 1.0, TOL = 1e-6, w = 1.9;
+  double sum, err = 1.0, TOL = 1e-6;
   int i, j, k, iter = 0, maxIter = simulationTime;
   int kc, kn, ks, kt, kb, ke, kw;
   double Cx = kd*dt/(dx*dx);

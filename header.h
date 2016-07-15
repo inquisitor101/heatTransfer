@@ -32,7 +32,7 @@
 // @TODO: check which constants can be macros or 'const'
 //
 int Nx, Ny, Nz; // discretization points per axis
-double dx, dy, dz, dt, kd, Ch, rho;
+double dx, dy, dz, dt, kd, Ch, rho, w;
 double *M;
 
 int boundCond[6];

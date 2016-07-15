@@ -26,10 +26,10 @@
 int main(int argc, char **argv){
 
 
-  Nx = 5;  Lx = 1.0; // meters
-  Ny = 5;  Ly = 1.0; // meters
-  Nz = 3;  Lz = 1.0; // meters
-  simulationTime = 100; // total time steps
+  Nx = 50;  Lx = 1.0; // meters
+  Ny = 50;  Ly = 1.0; // meters
+  Nz = 50;  Lz = 1.0; // meters
+  simulationTime = 100000; // total time steps
 
   // SOR coefficient
   w = 1.9;
@@ -37,8 +37,8 @@ int main(int argc, char **argv){
   // @FIXME: needs fixing, debug : rho & Ch -- or maybe it is correct ??
   //
   // material: concrete
-  rho = 1;//2400.0; // units: Kg/m3
-  Ch  = 1;//750.0; // units: J/(K.Kg)
+  rho = 2400.0; // units: Kg/m3
+  Ch  = 750.0; // units: J/(K.Kg)
   Kcond = 1.0; // thermal conductivity, units: W/(m.K)
 
 
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
   dx  = Lx/(Nx-1); // units: m
   dy  = Ly/(Ny-1); // units: m
   dz  = Lz/(Nz-1); // units: m
-  dt  = 0.001; // units: seconds
+  dt  = 1.001; // units: seconds
 
   // source term and geometry
   posX = 0.5; length = 0.1; // unitless -- relative
@@ -63,12 +63,12 @@ int main(int argc, char **argv){
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1: convection/free, 2: insulation, 3: Dirichlet
-  boundCond[0] = 3; // T
+  boundCond[0] = 1; // T
   boundCond[1] = 2; // B
-  boundCond[2] = 2; // E
-  boundCond[3] = 2; // W
-  boundCond[4] = 2; // S
-  boundCond[5] = 2; // N
+  boundCond[2] = 1; // E
+  boundCond[3] = 1; // W
+  boundCond[4] = 1; // S
+  boundCond[5] = 1; // N
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 0: no convection OR free, #: convective coefficient
@@ -82,12 +82,12 @@ int main(int argc, char **argv){
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // temperature in Kelvin (degC + 273.15)
-  Tsurr[0] = 273.15+100; // T
+  Tsurr[0] = 273.15+-10; // T
   Tsurr[1] = 273.15+100; // B
-  Tsurr[2] = 273.15+100; // E
-  Tsurr[3] = 273.15+100; // W
-  Tsurr[4] = 273.15+100; // S
-  Tsurr[5] = 273.15+100; // N
+  Tsurr[2] = 273.15-10; // E
+  Tsurr[3] = 273.15-10; // W
+  Tsurr[4] = 273.15+20; // S
+  Tsurr[5] = 273.15+20; // N
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // surface temperature in Kelvin (degC + 273.15)
@@ -95,8 +95,8 @@ int main(int argc, char **argv){
   fixedTemp[1] = 273.15+100; // B
   fixedTemp[2] = 273.15+100; // E
   fixedTemp[3] = 273.15+100; // W
-  fixedTemp[4] = 273.15+100; // S
-  fixedTemp[5] = 273.15+100; // N
+  fixedTemp[4] = 273.15+30; // S
+  fixedTemp[5] = 273.15+30; // N
 
 
   initialize();
@@ -121,25 +121,27 @@ int main(int argc, char **argv){
     fprintf(f, "\n" );
   }
 
+  // XXX: debug mode - begin
   // ----
-  printf("\n\n\n" );
-  for (k=0; k<Nz; k++){
-    for (j=0; j<Ny; j++){
-      for (i=0; i<Nx; i++){
-        // array math: array[M*L*k + L*j + i]
-        printf("%3.0f ", M[Nx*Ny*k + j*Nx + i]-273.15);
-      }
-      printf("\n" );
-    }
-    printf("\n" );
-  }
-  printf("\n" );
+  // printf("\n\n\n" );
+  // for (k=0; k<Nz; k++){
+  //   for (j=0; j<Ny; j++){
+  //     for (i=0; i<Nx; i++){
+  //       // array math: array[M*L*k + L*j + i]
+  //       printf("%3.0f ", M[Nx*Ny*k + j*Nx + i]-273.15);
+  //     }
+  //     printf("\n" );
+  //   }
+  //   printf("\n" );
+  // }
+  // printf("\n" );
 
   // printf("\n       \t\t lev 0\n  B B  \n  B B  \n       \n" );
   // printf("\n  N N  \t\t lev 1\nW     E\nW     E\n  S S  \n" );
   // printf("\n  N N  \t\t lev 2\nW     E\nW     E\n  S S  \n" );
   // printf("\n       \t\t lev 3\n  T T  \n  T T  \n       \n" );
   // // ----
+  // XXX: debug mode - over
 
   free(M);
   printf("\n");

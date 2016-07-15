@@ -440,11 +440,6 @@ void allVertices(int isConv_S, double hs, double Ts, // convection south -side
                 coef3*M[kb] + \
                 coef3*M[kt] + \
                 term + (1.0 - denom)*M[kc] ) + (1.0 - w)*M[kc];
-              // debugging --------------------------------------------------------------------------------------------
-              printf("\nv1 -- ke= %f, kn: %f, kb: %f, kt: %f, kc: %f",\
-                              M[ke]-273.15, M[kn]-273.15, M[kb]-273.15, M[kt]-273.15, M[kc]-273.15);
-                              printf("\nval: %e", denom);
-              // debugging --------------------------------------------------------------------------------------------
   }
   // vertex 2
   j = Ny-1; k = 0;

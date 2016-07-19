@@ -15,8 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-// #define isRegular 1
-// #define isSourceTerm 1
 
 #include "header.h"
 #include "funcs.h"
@@ -26,10 +24,10 @@
 int main(int argc, char **argv){
 
 
-  Nx = 50;  Lx = 1.0; // meters
-  Ny = 50;  Ly = 1.0; // meters
-  Nz = 50;  Lz = 1.0; // meters
-  simulationTime = 100000; // total time steps
+  Nx = 5;  Lx = 1.0; // meters
+  Ny = 5;  Ly = 1.0; // meters
+  Nz = 3;  Lz = 1.0; // meters
+  simulationTime = 10000; // total time steps
 
   // SOR coefficient
   w = 1.9;
@@ -62,13 +60,13 @@ int main(int argc, char **argv){
   //
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
-  // 1: convection/free, 2: insulation, 3: Dirichlet
+  // 1: convection, 2: insulation, 3: Dirichlet
   boundCond[0] = 1; // T
   boundCond[1] = 2; // B
-  boundCond[2] = 1; // E
-  boundCond[3] = 1; // W
-  boundCond[4] = 1; // S
-  boundCond[5] = 1; // N
+  boundCond[2] = 2; // E
+  boundCond[3] = 2; // W
+  boundCond[4] = 2; // S
+  boundCond[5] = 2; // N
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 0: no convection OR free, #: convective coefficient
@@ -123,25 +121,25 @@ int main(int argc, char **argv){
 
   // XXX: debug mode - begin
   // ----
-  // printf("\n\n\n" );
-  // for (k=0; k<Nz; k++){
-  //   for (j=0; j<Ny; j++){
-  //     for (i=0; i<Nx; i++){
-  //       // array math: array[M*L*k + L*j + i]
-  //       printf("%3.0f ", M[Nx*Ny*k + j*Nx + i]-273.15);
-  //     }
-  //     printf("\n" );
-  //   }
-  //   printf("\n" );
-  // }
-  // printf("\n" );
-
+  printf("\n\n\n" );
+  for (k=0; k<Nz; k++){
+    for (j=0; j<Ny; j++){
+      for (i=0; i<Nx; i++){
+        // array math: array[M*L*k + L*j + i]
+        printf("%3.0f ", M[Nx*Ny*k + j*Nx + i]-273.15);
+      }
+      printf("\n" );
+    }
+    printf("\n" );
+  }
+  printf("\n" );
+  //
   // printf("\n       \t\t lev 0\n  B B  \n  B B  \n       \n" );
   // printf("\n  N N  \t\t lev 1\nW     E\nW     E\n  S S  \n" );
   // printf("\n  N N  \t\t lev 2\nW     E\nW     E\n  S S  \n" );
   // printf("\n       \t\t lev 3\n  T T  \n  T T  \n       \n" );
   // // ----
-  // XXX: debug mode - over
+  // // XXX: debug mode - over
 
   free(M);
   printf("\n");

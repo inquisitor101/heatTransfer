@@ -14,6 +14,7 @@
 %\usepackage{cite}
 \usepackage{nomencl}
 \usepackage{amsmath}
+\usepackage[makeroom]{cancel}
 \usepackage{siunitx}
 %\usepackage{gensymb}	% for the degree symbol
 \usepackage{listings} 	% \lstinline[]|<code>|
@@ -68,24 +69,29 @@
 	
 	\section{Model Description}
 	
-	\section{Methodology}
+	\section{Model Formulation}
 	The first checkpoint in this paper is about implementing a fully functional conductive model in a given unit cube. To achieve this, consider the below general expression.
 	\begin{equation}
 		c\rho\frac{\partial T}{\partial t} = K_c \Bigg[ \frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} + \frac{\partial^2 T}{\partial z^2} \Bigg] + \dot{Q}_{gen}
 	\end{equation}
 	where $T$ is the temperature ($T: K$), $c$ is the specific heat ($c: \frac{J}{K.kg}$), $\rho$ is the mass density ($\rho: \frac{kg}{m^3}$), $\dot{Q}_{gen}$ is the heat generation ($\dot{Q}_{gen}: \frac{W}{m^3}$), $K_c$ is the thermal conductivity and the relation between thermal conductivity ($K_c: \frac{W}{K.m}$) and thermal diffusivity is: $k_d = \frac{K_c}{c\rho}$ with units ($k_d: \frac{m^2}{s}$).
 	
-	To complement this model, boundary conditions that employ the two remaining categories of heat transfer, convection and radiation, are considered. Thus the expression for the boundary nodes becomes:
+	To complement this model, boundary conditions that employ the two remaining categories of heat transfer, convection and radiation, are considered. Thus the expression for the boundary nodes -- in general form -- becomes:
 	\begin{equation}
-		-k\frac{\partial T}{\partial x}\Bigg |_{BC} = hA(T_{s} - T_{surr})+\sigma \epsilon (T_s^4 - T_{surr}^4)
+		\rho c V \frac{\partial T}{\partial t} = q_{cond} + q_{conv} + q_{rad}
 	\end{equation}
-	where $T_s$ is the surface temperature ($T_s: K$), $T_{surr}$ is the surrounding temperature ($T_{surr}: K$), $h$ is the convection heat transfer coefficient ($h: \frac{W}{m^2.K}$), $A$ is the area undergoing convection ($A: m^2$), $\sigma$ is the Stefan-Boltzmann coefficient ($\sigma: \frac{W}{m^2.K^4}$) and $\epsilon$ is the emissivity ratio and is accordingly unitless.
+	$$q_{cond} = K_c A_{yz}\frac{\partial T}{\partial x} + K_c A_{xz}\frac{\partial T}{\partial y} + K_c A_{xy}\frac{\partial T}{\partial z} $$
+	$$q_{conv} = hA_s(T_{s} - T_{surr})$$
+	$$q_{rad} = \sigma \epsilon A_s (T_s^4 - T_{surr}^4) $$ 
+	where $T_s$ is the surface temperature ($T_s: K$), $T_{surr}$ is the surrounding temperature ($T_{surr}: K$),  $V$ is the volume ($V: m^3$), $h$ is the convection heat transfer coefficient ($h: \frac{W}{m^2.K}$), $A$ is the area undergoing convection ($A: m^2$), $\sigma$ is the Stefan-Boltzmann coefficient ($\sigma: \frac{W}{m^2.K^4}$) and $\epsilon$ is the emissivity ratio and is accordingly unitless.
 	
-	Nonetheless, the convection and radiation terms are left out for later boundary conditions. The resulting final expression becomes:
+	Nonetheless, the convection and radiation terms are left out for later boundary conditions. The resulting final expression -- inner grid points -- becomes:
 	\begin{equation}
 		k_d\Bigg[ \frac{\partial^2 T}{\partial x^2}+\frac{\partial^2 T}{\partial y^2}+\frac{\partial^2 T}{\partial z^2} \Bigg] + \frac{\dot{Q}_{gen}}{c\rho} = \frac{\partial T}{\partial t}
 	\end{equation}
+	
 	\subsection{Explicit Scheme}
+	\subsubsection{Inner-grid Points}		
 	Now in order to initiate the numerical procedure, a 7-point stencil and with a second order central difference scheme was adopted. The above analytical expression translates numerically into:
 	\begin{multline}
 		k_d\frac{\partial^2 T}{\partial x^2}=k_d\frac{T_{i-1,j,k}^n-2T_{i,j,k}^n+T_{i+1,j,k}^n}{\delta x^2}\\ 
@@ -93,51 +99,88 @@
 		\qquad \qquad \qquad k_d\frac{\partial^2 T}{\partial z^2}=k_d\frac{T_{i,j,k-1}^n-2T_{i,j,k}^n+T_{i,j,k+1}^n}{\delta z^2}\\
 		\frac{\partial T}{\partial t} = \frac{T_{i,j,k}^{n+1}-T_{i,j,k}^{n}}{\delta t}
 	\end{multline}
-	with $\delta x,\ \delta y,\ \delta z,\ \delta t$ being the discretized step sizes spatially in the x, y and z direction and temporally in time. 
+	with $\delta x,\ \delta y,\ \delta z,\ \delta t$ being the discretized spacial step sizes in the x, y and z direction and temporal step in time, respectively. 
 	
-	The next step is to take the above expression and rearrange it in order to solve for the next value in time while integrating a general parameter. This general parameter, $f_{i,j,k}$, that takes care of both boundary and heat generation conditions with respect to their locations. 
-	\begin{multline}
+	The next step is to take the above expression and rearrange it in order to solve for the next value in time explicitly.
+		\begin{multline}
 		T_{i,j,k}^{n+1} = C_x\Big( T_{i-1,j,k}^n+T_{i+1,j,k}^n \Big)\\ 
-		+ C_y \Big( T_{i,j-1,k}^n+T_{i,j+1,k}^n \Big) \qquad \qquad \qquad \\
-		 + C_z \Big( T_{i,j,k-1}^n+T_{i,j,k+1}^n \Big)\\ 
-		+ \Big( 1 - C_c \Big).T_{i,j,k}^n + \delta t.f_{i,j,k}^n \quad
-	\end{multline}
+		+ C_y \Big( T_{i,j-1,k}^n+T_{i,j+1,k}^n \Big)  \\
+		\qquad \qquad + C_z \Big( T_{i,j,k-1}^n+T_{i,j,k+1}^n \Big)\\ 
+		+ \delta t\frac{\dot{Q}_{gen}}{c\rho} + \Big( 1 - C_c \Big).T_{i,j,k}^n 
+		\end{multline}
 	where the coefficients $C_x$, $C_y$, $C_z$ and $C_c$ are constants denoting the terms related to the x-axis, y-axis, z-axis and the center of the finite difference kernel, respectively. Their actual values are:
 	$$C_x = \frac{k_d}{\delta x^2} \delta t$$
 	$$C_y =  \frac{k_d}{\delta y^2} \delta t$$
 	$$C_z = \frac{k_d}{\delta z^2} \delta t$$
 	$$C_c = 2.k_d\Big( \frac{1}{\delta x^2}+\frac{1}{\delta y^2}+\frac{1}{\delta z^2} \Big)\delta t$$
-	Next is to consider boundary conditions. The below is a an example of top surface (inner grid) boundary implementation -- only one side will be considered for the sake of brevity. 
-	$$\dot{q}_{cond}\Big |_{BC} = \dot{q}_{conv}$$
-	$$-k_d.A_{yz} \frac{\partial T}{\partial x} -k_d.A_{xz} \frac{\partial T}{\partial y} - k_d.A_{xy} \frac{\partial T}{\partial z} = h.A_s\partial T $$
+		
+	
+	
+	\subsubsection{Outer-grid Points}
+	As for boundary conditions, these are considered separately in their three forms: surface, vertex and corner-like geometries.
+	
+	Each surface covers an entire outer boundary face with the exclusion of its respective outer points (i.e. vertices and corners). The expression for calculating heat transfer considering such a geometry is demonstrated below for a top layer boundary.
 	\begin{multline}
-	-k_d \frac{T_{i,j,k}-T_{i-1,j,k}}{\delta x}\delta y \frac{\delta z}{2}\\
-	-k_d \frac{T_{i,j,k}-T_{i+1,j,k}}{\delta x}\delta y \frac{\delta z}{2} \qquad \qquad \qquad \qquad\\
-	-k_d \frac{T_{i,j,k}-T_{i,j-1,k}}{\delta y}\delta x \frac{\delta z}{2} \qquad \qquad \qquad\\
-	-k_d \frac{T_{i,j,k}-T_{i,j+1,k}}{\delta y}\delta x \frac{\delta z}{2} \qquad \qquad \\
-	-k_d \frac{T_{i,j,k}-T_{i,j,k-1}}{\delta z}\delta x \delta y \qquad \\
-	 = \frac{1}{c\rho}h.( T_{i,j,k}-T_{\infty})\delta x \delta y \quad \qquad
+	c\rho V \frac{\partial T}{\partial t} = \\
+	h_t A_{xy} \partial T + \sigma \epsilon_t A_{xy} \partial T^4 \qquad \qquad \qquad \qquad \qquad \\
+	+ K_c A_{yz}\frac{\partial T}{\partial x^-} + K_c A_{yz}\frac{\partial T}{\partial x^+} \qquad \qquad \\
+	+ K_c A_{xz}\frac{\partial T}{\partial y^+} + K_c A_{xz}\frac{\partial T}{\partial y^-} \\
+	\qquad + K_c A_{xy} \frac{\partial T}{\partial z^-} + \cancelto{0}{K_c A_{xy} \frac{\partial T}{\partial z^+}}
 	\end{multline}
-	Rearranging the terms, the value of $T_{i,j,N_z}$ becomes,
+	where some of the terms simplify, numerically, to:
+	$$V = \delta x \times \delta y \times \frac{\delta z}{2} $$
+	$$A_{xy} = \delta x \times \delta y $$
+	$$A_{yz} = \delta y \times \frac{\delta z}{2} $$
+	$$A_{xz} = \delta x \times \frac{\delta z}{2} $$
+	
+	As for the vertices, considering for instance the front-left vertex (numbered vertex \#1 according to the design diagram), the expression becomes:
+	% equation
 	\begin{multline}
-	T_{i,j,N_z} = \frac{1}{C_c'}\Big[ C_x'\Big(T_{i-1,j,N_z}+T_{i+1,j,N_z}\Big)\\
-	\qquad \quad+C_y'\Big(T_{i,j-1,N_z}+T_{i,j+1,N_z} \Big)\\
-	+C_z'T_{i,j,N_z-1}+C_s'T_{\infty}\Big] 
+	c \rho V \frac{\partial T}{\partial t} = \\
+	h_w A_{yz}\partial T + h_s A_{xz}\partial T \qquad \qquad \qquad \qquad \qquad\\
+	+ \sigma \epsilon_w A_{yz}\partial T^4 + \sigma \epsilon_s A_{xz}\partial T^4 \qquad \qquad\\
+	+ \cancelto{0}{K_c A_{yz}\frac{\partial T}{\delta x^-}} + K_c A_{yz}\frac{\partial T}{\delta x^+} \\
+	\qquad \qquad \qquad + K_c A_{xz}\frac{\partial T}{\delta y^-} + \cancelto{0}{K_c A_{xz}\frac{\partial T}{\delta y^+}}\\
+	+ K_c A_{xy}\frac{\partial T}{\delta z^-} + K_c A_{xy}\frac{\partial T}{\delta z^-}
 	\end{multline}
-	with the coefficients, 
-	$$C_c'=\frac{h}{c\rho}\delta x \delta y + k_d \frac{\delta y \delta z}{\delta x} + k_d \frac{\delta x \delta z}{\delta y} + k_d \frac{\delta x \delta y}{\delta z}  $$
-	$$C_x'=k_d \frac{\delta y \delta z}{2\delta x} $$ 
-	$$C_y'=k_d \frac{\delta x \delta z}{2\delta y} $$
-	$$C_z'=k_d \frac{\delta x \delta y}{\delta z} $$
-	$$C_s'= \frac{h}{c\rho}\delta x \delta y $$ 
-	Similarly follows the rest of the five boundary sides.
+	where some of the terms simplify, numerically, to:
+	$$V = \frac{\delta x}{2} \times \frac{\delta y}{2} \times \delta z $$
+	$$A_{yz} = \frac{\delta y}{2} \times \delta z $$
+	$$A_{xz} = \frac{\delta x}{2} \times \delta z $$
+	$$A_{xy} = \frac{\delta x}{2} \times \frac{\delta y}{2} $$
+	
+	Finally, concerning the corners and taking in particular the front-lower left corner for demonstration purposes, the following expression is generated:
+	\begin{multline}
+	c \rho V\frac{\partial T}{\partial t} = \\
+	h_w A_{yz}\partial T + h_s A_{xz}\partial T + h_b A_{xy}\partial T \qquad \qquad \qquad\\
+	+ \sigma \epsilon_w A_{yz}\partial T^4 + \sigma \epsilon_s A_{xz}\partial T^4 + \sigma \epsilon_b A_{xy}\partial T^4\\
+	+ \cancelto{0}{K_c A_{yz}\frac{\partial T}{\delta x^-}} + K_c A_{yz}\frac{\partial T}{\delta x^+} \qquad\\
+	\qquad + K_c A_{xz}\frac{\partial T}{\delta y^-} + \cancelto{0}{K_c A_{xz}\frac{\partial T}{\delta y^+}}\\
+	+ \cancelto{0}{K_c A_{xy}\frac{\partial T}{\delta z^-}} + K_c A_{xy}\frac{\partial T}{\delta z^+}
+	\end{multline}
+	where some of the terms simplify, numerically, to:
+	$$V = \frac{\delta x}{2} \times \frac{\delta y}{2} \times \frac{\delta z}{2} $$
+	$$A_{yz} = \frac{\delta y}{2} \times \frac{\delta z}{2} $$
+	$$A_{xz} = \frac{\delta x}{2} \times \frac{\delta z}{2} $$
+	$$A_{xy} = \frac{\delta x}{2} \times \frac{\delta y}{2} $$
+	and the differentiations for all three boundary geometry are:
+	$$\partial T = T_{ijk}^n - T_\infty $$
+	$$\partial T^4 = {T_{ijk}^n}^4 - T_\infty^4 $$
+	$$\frac{\partial T}{\partial t} = \frac{T_{ijk}^{n+1} - T_{ijk}^n}{\delta t} $$
+	$$\frac{\partial T}{\delta x^-} = \frac{T_{ijk}^n - T_{i-1,j,k}^n}{\delta x} $$
+	$$\frac{\partial T}{\delta x^+} = \frac{T_{ijk}^n - T_{i+1,j,k}^n}{\delta x} $$
+	$$\frac{\partial T}{\delta y^-} = \frac{T_{ijk}^n - T_{i,j-1,k}^n}{\delta y} $$
+	$$\frac{\partial T}{\delta y^+} = \frac{T_{ijk}^n - T_{i,j+1,k}^n}{\delta y} $$
+	$$\frac{\partial T}{\delta z^-} = \frac{T_{ijk}^n - T_{i,j,k-1}^n}{\delta z} $$
+	$$\frac{\partial T}{\delta z^+} = \frac{T_{ijk}^n - T_{i,j,k+1}^n}{\delta z} $$
+
 	
 	However one very important delimitation while using such a scheme would be meeting the CFL (Courant-Friedrichs-Lewy) condition criteria. Since this is an explicit scheme, the time steps taken should be relatively, and ridiculously smaller with respect to the space discretization. 
 	
 	
-	 
+	\subsection{Implicit Scheme} 
 	
-	\section{Results}
+	\section{Simulation Results}
 	
 	\section{Discussion}
 	% a section about accuracy, convergence and stability done analytically, and maybe a comparison with the numerical results ?

@@ -117,14 +117,14 @@
 	
 	
 	\subsubsection{Outer-grid Points}
-	As for boundary conditions, these are considered separately in their three forms: surface, vertex and corner-like geometries.
+	As for boundary conditions, these are considered separately in their three forms: surface, edge and corner-like geometries.
 	
 	Each surface covers an entire outer boundary face with the exclusion of its respective outer points (i.e. vertices and corners). The expression for calculating heat transfer considering such a geometry is demonstrated below for a top layer boundary.
 	\begin{multline}
 	c\rho V \frac{\partial T}{\partial t} = \\
 	h_t A_{xy} \partial T + \sigma \epsilon_t A_{xy} \partial T^4 \qquad \qquad \qquad \qquad \qquad \\
 	+ K_c A_{yz}\frac{\partial T}{\partial x^-} + K_c A_{yz}\frac{\partial T}{\partial x^+} \qquad \qquad \\
-	+ K_c A_{xz}\frac{\partial T}{\partial y^+} + K_c A_{xz}\frac{\partial T}{\partial y^-} \\
+	+ K_c A_{xz}\frac{\partial T}{\partial y^-} + K_c A_{xz}\frac{\partial T}{\partial y^+} \\
 	\qquad + K_c A_{xy} \frac{\partial T}{\partial z^-} + \cancelto{0}{K_c A_{xy} \frac{\partial T}{\partial z^+}}
 	\end{multline}
 	where some of the terms simplify, numerically, to:
@@ -133,7 +133,7 @@
 	$$A_{yz} = \delta y \times \frac{\delta z}{2} $$
 	$$A_{xz} = \delta x \times \frac{\delta z}{2} $$
 	
-	As for the vertices, considering for instance the front-left vertex (numbered vertex \#1 according to the design diagram), the expression becomes:
+	As for the edges (vertices), considering for instance the front-left vertex (numbered vertex \#1 according to the design diagram), the expression becomes:
 	% equation
 	\begin{multline}
 	c \rho V \frac{\partial T}{\partial t} = \\
@@ -141,7 +141,7 @@
 	+ \sigma \epsilon_w A_{yz}\partial T^4 + \sigma \epsilon_s A_{xz}\partial T^4 \qquad \qquad\\
 	+ \cancelto{0}{K_c A_{yz}\frac{\partial T}{\delta x^-}} + K_c A_{yz}\frac{\partial T}{\delta x^+} \\
 	\qquad \qquad \qquad + K_c A_{xz}\frac{\partial T}{\delta y^-} + \cancelto{0}{K_c A_{xz}\frac{\partial T}{\delta y^+}}\\
-	+ K_c A_{xy}\frac{\partial T}{\delta z^-} + K_c A_{xy}\frac{\partial T}{\delta z^-}
+	+ K_c A_{xy}\frac{\partial T}{\delta z^-} + K_c A_{xy}\frac{\partial T}{\delta z^+}
 	\end{multline}
 	where some of the terms simplify, numerically, to:
 	$$V = \frac{\delta x}{2} \times \frac{\delta y}{2} \times \delta z $$

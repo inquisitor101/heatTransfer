@@ -1125,11 +1125,12 @@ void Dirichlet(int surface, double value)
 void surface(int surface, double h, double Tsurr)
 {
   /*
-    This only takes care of convection/free-surface in the inner surface
+    This only takes care of convection surface in the inner surface
     of a given plane -- i.e. excluding corners and vertices.
   */
   int i, j, k, kw, ke, kt, kb, ks, kn, kc, fix, plane;
-  double Ccp, Cxp, Cyp, Czp, Csp;
+  double Ccp, Cxp, Cyp, Czp, Csp, vol = dx*dy*dz/2.0;
+
   assert(surface == 0 || surface == 1 || \
          surface == 2 || surface == 3 || \
          surface == 4 || surface == 5 );
@@ -1167,11 +1168,11 @@ void surface(int surface, double h, double Tsurr)
       i = fix; // at which level to fix
       assert( i==0 || i==(Nx-1) );
 
-      Ccp = dt*( h*dy*dz/(Ch*rho) + kd*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) ) );
-      Cxp = dt*kd/(dx*dx);
-      Cyp = dt*kd/(dy*dy);
-      Czp = dt*kd/(dz*dz);
-      Csp = dt*h*dy*dz/(Ch*rho);
+      Cxp = dt*kd*dy*dz/(dx*vol);
+      Cyp = dt*kd*dx*dz/(2.0*dy*vol);
+      Czp = dt*kd*dx*dy/(2.0*dz*vol);
+      Csp = dt*h*dy*dz/(rho*Ch*vol);
+      Ccp = Cxp + Cyp + Czp + Csp;
 
       if (i==Nx-1){
         for (k=1; k<Nz-1; k++){
@@ -1207,11 +1208,11 @@ void surface(int surface, double h, double Tsurr)
       j = fix; // at which level to fix
       assert( j==0 || j==(Ny-1) );
 
-      Ccp = dt*( h*dx*dz/(Ch*rho) + kd*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) ) );
-      Cxp = dt*kd/(dx*dx);
-      Cyp = dt*kd/(dy*dy);
-      Czp = dt*kd/(dz*dz);
-      Csp = dt*h*dx*dz/(Ch*rho);
+      Cxp = dt*kd*dy*dz/(2.0*dx*vol);
+      Cyp = dt*kd*dx*dz/(dy*vol);
+      Czp = dt*kd*dx*dy/(2.0*dz*vol);
+      Csp = dt*h*dx*dz/(Ch*rho*vol);
+      Ccp = Cxp + Cyp + Czp + Csp;
 
       if (j==Ny-1){
         for (k=1; k<Nz-1; k++){
@@ -1247,11 +1248,11 @@ void surface(int surface, double h, double Tsurr)
       k = fix; // at which level to fix
       assert( k==0 || k==(Nz-1) );
 
-      Ccp = dt*( h*dx*dy/(Ch*rho) + kd*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) ) );
-      Cxp = dt*kd/(dx*dx);
-      Cyp = dt*kd/(dy*dy);
-      Czp = dt*kd/(dz*dz);
-      Csp = dt*h*dx*dy/(Ch*rho);
+      Cxp = dt*kd*dy*dz/(2.0*dx*vol);
+      Cyp = dt*kd*dx*dz/(2.0*dy*vol);
+      Czp = dt*kd*dx*dy/(dz*vol);
+      Csp = dt*h*dx*dy/(rho*Ch*vol);
+      Ccp = Cxp + Cyp + Czp + Csp;
 
       if (k==Nz-1){
         for (j=1; j<Ny-1; j++){

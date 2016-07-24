@@ -26,7 +26,7 @@ int main(int argc, char **argv){
 
   Nx = 5;  Lx = 1.0; // meters
   Ny = 5;  Ly = 1.0; // meters
-  Nz = 3;  Lz = 1.0; // meters
+  Nz = 5;  Lz = 1.0; // meters
   simulationTime = 10000; // total time steps
 
   // SOR coefficient
@@ -60,7 +60,7 @@ int main(int argc, char **argv){
   //
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
-  // 1: convection, 2: insulation, 3: Dirichlet
+  // 1: convection/free, 2: insulation, 3: Dirichlet
   boundCond[0] = 1; // T
   boundCond[1] = 2; // B
   boundCond[2] = 2; // E

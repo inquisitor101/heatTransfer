@@ -26,14 +26,12 @@ int main(int argc, char **argv){
 
   Nx = 5;  Lx = 1.0; // meters
   Ny = 5;  Ly = 1.0; // meters
-  Nz = 5;  Lz = 1.0; // meters
+  Nz = 3;  Lz = 1.0; // meters
   simulationTime = 10000; // total time steps
 
   // SOR coefficient
   w = 1.9;
 
-  // @FIXME: needs fixing, debug : rho & Ch -- or maybe it is correct ??
-  //
   // material: concrete
   rho = 2400.0; // units: Kg/m3
   Ch  = 750.0; // units: J/(K.Kg)
@@ -44,7 +42,7 @@ int main(int argc, char **argv){
   dx  = Lx/(Nx-1); // units: m
   dy  = Ly/(Ny-1); // units: m
   dz  = Lz/(Nz-1); // units: m
-  dt  = 1.001; // units: seconds
+  dt  = 0.0001; // units: seconds
 
   // source term and geometry
   posX = 0.5; length = 0.1; // unitless -- relative
@@ -60,8 +58,8 @@ int main(int argc, char **argv){
   //
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
-  // 1: convection/free, 2: insulation, 3: Dirichlet
-  boundCond[0] = 1; // T
+  // 1: convection, 2: insulation, 3: Dirichlet
+  boundCond[0] = 3; // T
   boundCond[1] = 2; // B
   boundCond[2] = 2; // E
   boundCond[3] = 2; // W
@@ -80,7 +78,7 @@ int main(int argc, char **argv){
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // temperature in Kelvin (degC + 273.15)
-  Tsurr[0] = 273.15+-10; // T
+  Tsurr[0] = 273.15-10; // T
   Tsurr[1] = 273.15+100; // B
   Tsurr[2] = 273.15-10; // E
   Tsurr[3] = 273.15-10; // W

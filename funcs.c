@@ -28,7 +28,7 @@ void SOR(void)
   double Cx = kd*dt/(dx*dx);
   double Cy = kd*dt/(dy*dy);
   double Cz = kd*dt/(dz*dz);
-  double Cc = 2*kd*dt*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) );
+  double Cc = 2.0*kd*dt*( 1.0/(dx*dx) + 1.0/(dy*dy) + 1.0/(dz*dz) );
 
 #if isSourceTerm
   double Cs = dt/(rho*Ch); // this transforms (W/m3) into (Kelvin)
@@ -42,6 +42,8 @@ void SOR(void)
   #if isRegular
     // regular --> box
     while (iter < maxIter){
+
+      boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
       for (k=1; k<Nz-1; k++){
         for (j=1; j<Ny-1; j++){
@@ -59,8 +61,6 @@ void SOR(void)
           }
         }
       }
-
-      boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
       if (iter%50 == 0){
         // calculate norm of error
@@ -92,6 +92,8 @@ void SOR(void)
     // irregular --> sphere
     while (iter < maxIter){
 
+      boundary(boundCond, h_conv, Tsurr, fixedTemp);
+
       for (k=1; k<Nz-1; k++){
         for (j=1; j<Ny-1; j++){
           for (i=1; i<Nx-1; i++){
@@ -108,8 +110,6 @@ void SOR(void)
           }
         }
       }
-
-      boundary(boundCond, h_conv, Tsurr, fixedTemp);
 
       if (iter%50 == 0){
         // calculate norm of error

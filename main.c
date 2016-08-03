@@ -33,8 +33,8 @@ int main(int argc, char **argv){
   w = 1.9;
 
   // material: concrete
-  rho = 2400.0; // units: Kg/m3
-  Ch  = 750.0; // units: J/(K.Kg)
+  rho = 1;//2400.0; // units: Kg/m3
+  Ch  = 1;//750.0; // units: J/(K.Kg)
   Kcond = 1.0; // thermal conductivity, units: W/(m.K)
 
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv){
   dx  = Lx/(Nx-1); // units: m
   dy  = Ly/(Ny-1); // units: m
   dz  = Lz/(Nz-1); // units: m
-  dt  = 0.0001; // units: seconds
+  dt  = 0.00001; // units: seconds
 
   // source term and geometry
   posX = 0.5; length = 0.1; // unitless -- relative
@@ -52,14 +52,13 @@ int main(int argc, char **argv){
 
   // radiation terms
   sigma = 5.67e-8; // stefan-boltzmann constant, units: W/(m2.K4)
-  ems = 0.91; // emissivity constant concrete (rough)
 
   // @TODO: change boundary conditions into input if/else
   //
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
   // 1: convection, 2: insulation, 3: Dirichlet
-  boundCond[0] = 3; // T
+  boundCond[0] = 1; // T
   boundCond[1] = 2; // B
   boundCond[2] = 2; // E
   boundCond[3] = 2; // W
@@ -77,8 +76,17 @@ int main(int argc, char **argv){
   h_conv[5] = 20.0; // N
 
   // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
-  // temperature in Kelvin (degC + 273.15)
-  Tsurr[0] = 273.15-10; // T
+  // emissivity, range: 0.0 - 1.0 (inclusive)
+  ems[0] = 0.0; // T
+  ems[1] = 0.0; // B
+  ems[2] = 0.0; // E
+  ems[3] = 0.0; // W
+  ems[4] = 0.0; // S
+  ems[5] = 0.0; // N
+
+  // legend: 0: T, 1: B, 2: E, 3: W, 4: S, 5: N
+  // temperature in Kelvin (273.15 + degC)
+  Tsurr[0] = 273.15+100; // T
   Tsurr[1] = 273.15+100; // B
   Tsurr[2] = 273.15-10; // E
   Tsurr[3] = 273.15-10; // W

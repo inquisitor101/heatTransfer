@@ -241,10 +241,7 @@ void boundary(int condition[6], double h[6],
 
   }
 
-  // @FIXME : debug corner and vertex functions ...
-  //
-  // @NOTE: prob seems in 'allVertices', model equations seems wrong -- redo !!
-  //
+
 
   allVertices(isConv[4], h[4], Tsurr[4],   // convection south -side
               isConv[5], h[5], Tsurr[5],   // convection north -side
@@ -259,9 +256,6 @@ void boundary(int condition[6], double h[6],
              isConv[2], h[2], Tsurr[2],    // convection east  -side
              isConv[0], h[0], Tsurr[0],    // convection top   -side
              isConv[1], h[1], Tsurr[1] );  // convection bottom-side
-// ---------------------------------------------------------------------
-  // @IDEA:
-  //       radiation function
 
 
 }
@@ -1153,7 +1147,7 @@ void surface(int surface, double h, double Tsurr)
       Cyp = dt*kd*dx*dz/(2.0*dy*vol);
       Czp = dt*kd*dx*dy/(2.0*dz*vol);
       Csp = dt*h*dy*dz/(rho*Ch*vol);
-      Ccp = Cxp + Cyp + Czp + Csp;
+      Ccp = Cxp + 2.0*Cyp + 2.0*Czp + Csp;
 
       if (i==Nx-1){
         for (k=1; k<Nz-1; k++){
@@ -1193,7 +1187,7 @@ void surface(int surface, double h, double Tsurr)
       Cyp = dt*kd*dx*dz/(dy*vol);
       Czp = dt*kd*dx*dy/(2.0*dz*vol);
       Csp = dt*h*dx*dz/(Ch*rho*vol);
-      Ccp = Cxp + Cyp + Czp + Csp;
+      Ccp = 2.0*Cxp + Cyp + 2.0*Czp + Csp;
 
       if (j==Ny-1){
         for (k=1; k<Nz-1; k++){
@@ -1233,7 +1227,7 @@ void surface(int surface, double h, double Tsurr)
       Cyp = dt*kd*dx*dz/(2.0*dy*vol);
       Czp = dt*kd*dx*dy/(dz*vol);
       Csp = dt*h*dx*dy/(rho*Ch*vol);
-      Ccp = Cxp + Cyp + Czp + Csp;
+      Ccp = 2.0*Cxp + 2.0*Cyp + Czp + Csp;
 
       if (k==Nz-1){
         for (j=1; j<Ny-1; j++){

@@ -38,6 +38,7 @@ double *M;
 int boundCond[6];
 double h_conv[6];
 double Tsurr[6];
+double ems[6];
 double fixedTemp[6];
 double Lx, Ly, Lz;
 double Kcond;
@@ -47,5 +48,5 @@ double length, width, height;
 int x0, x1, y0, y1, z0, z1;
 double genHeat, simulationTime;
 
-double sigma, ems; // radiation constants
+double sigma; // stefan-boltzmann constant
 #endif

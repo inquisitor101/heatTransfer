@@ -185,6 +185,7 @@ void initialize(void)
 
 
 void boundary(int condition[6], double h[6],
+              double emissivity[6],
               double Tsurr[6], double temp[6])
 {
 /*
@@ -230,7 +231,7 @@ void boundary(int condition[6], double h[6],
 
     if (condition[i] == convection){
       isConv[i] = 1;
-      surface(i, h[i], Tsurr[i]);
+      surface(i, h[i], emissivity[i], Tsurr[i]);
     }
     else if (condition[i] == insulation){
       insulated(i);
@@ -1097,14 +1098,14 @@ void Dirichlet(int surface, double value)
 }
 
 
-void surface(int surface, double h, double Tsurr)
+void surface(int surface, double h, double emsv, double Tsurr)
 {
   /*
     This only takes care of convection surface in the inner surface
     of a given plane -- i.e. excluding corners and vertices.
   */
   int i, j, k, kw, ke, kt, kb, ks, kn, kc, fix, plane;
-  double Ccp, Cxp, Cyp, Czp, Csp, vol = dx*dy*dz/2.0;
+  double Ccp, Cxp, Cyp, Czp, Csp, rad, Tsurr4, vol = dx*dy*dz/2.0;
 
   assert(surface == 0 || surface == 1 || \
          surface == 2 || surface == 3 || \
@@ -1149,6 +1150,9 @@ void surface(int surface, double h, double Tsurr)
       Csp = dt*h*dy*dz/(rho*Ch*vol);
       Ccp = Cxp + 2.0*Cyp + 2.0*Czp + Csp;
 
+      rad =  dt*sigma*emsv*dy*dz/(rho*Ch*vol);
+      Tsurr4 = Tsurr*Tsurr*Tsurr*Tsurr;
+
       if (i==Nx-1){
         for (k=1; k<Nz-1; k++){
           for (j=1; j<Ny-1; j++){
@@ -1158,6 +1162,7 @@ void surface(int surface, double h, double Tsurr)
             kw = kc-1;
             M[kc] = w*( Cxp*M[kw] + Cyp*(M[kn]+M[ks]) + \
                         Czp*(M[kb]+M[kt]) + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }
@@ -1172,6 +1177,7 @@ void surface(int surface, double h, double Tsurr)
             ke = kc+1;
             M[kc] = w*( Cxp*M[ke] + Cyp*(M[kn]+M[ks]) + \
                         Czp*(M[kb]+M[kt]) + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }
@@ -1189,6 +1195,9 @@ void surface(int surface, double h, double Tsurr)
       Csp = dt*h*dx*dz/(Ch*rho*vol);
       Ccp = 2.0*Cxp + Cyp + 2.0*Czp + Csp;
 
+      rad =  dt*sigma*emsv*dx*dz/(rho*Ch*vol);
+      Tsurr4 = Tsurr*Tsurr*Tsurr*Tsurr;
+
       if (j==Ny-1){
         for (k=1; k<Nz-1; k++){
           for (i=1; i<Nx-1; i++){
@@ -1198,6 +1207,7 @@ void surface(int surface, double h, double Tsurr)
             kn = kc-Nx;
             M[kc] = w*( Cxp*(M[ke]+M[kw]) + Cyp*M[kn] + \
                         Czp*(M[kb]+M[kt]) + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }
@@ -1212,6 +1222,7 @@ void surface(int surface, double h, double Tsurr)
             ks = kc-Nx;
             M[kc] = w*( Cxp*(M[ke]+M[kw]) + Cyp*M[ks] + \
                         Czp*(M[kb]+M[kt]) + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }
@@ -1229,6 +1240,9 @@ void surface(int surface, double h, double Tsurr)
       Csp = dt*h*dx*dy/(rho*Ch*vol);
       Ccp = 2.0*Cxp + 2.0*Cyp + Czp + Csp;
 
+      rad =  dt*sigma*emsv*dx*dy/(rho*Ch*vol);
+      Tsurr4 = Tsurr*Tsurr*Tsurr*Tsurr;
+
       if (k==Nz-1){
         for (j=1; j<Ny-1; j++){
           for (i=1; i<Nx-1; i++){
@@ -1238,6 +1252,7 @@ void surface(int surface, double h, double Tsurr)
             kb = kc-Nx*Ny;
             M[kc] = w*( Cxp*(M[kw]+M[ke]) + Cyp*(M[kn]+M[ks]) + \
                         Czp*M[kb] + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }
@@ -1252,6 +1267,7 @@ void surface(int surface, double h, double Tsurr)
             kt = kc+Nx*Ny;
             M[kc] = w*( Cxp*(M[kw]+M[ke]) + Cyp*(M[kn]+M[ks]) + \
                         Czp*M[kt] + Csp*Tsurr + \
+                        rad*(Tsurr4 - M[kc]*M[kc]*M[kc]*M[kc]) + \
                         (1.0 - Ccp)*M[kc] ) + \
                         (1.0 - w)*M[kc];
           }

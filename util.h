@@ -27,9 +27,10 @@ void heatGeneration(void);
 
 void Dirichlet(int surface, double value);
 
-void surface(int surface, double h, double Tsurr);
+void surface(int surface, double h, double emsv, double Tsurr);
 
 void boundary(int condition[], double h[],
+              double emissivity[],
               double Tsurr[], double temp[]);
 
 void allCorners(int isConv_S, double hs, double Ts, // convection south -side

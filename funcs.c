@@ -43,7 +43,7 @@ void SOR(void)
     // regular --> box
     while (iter < maxIter){
 
-      boundary(boundCond, h_conv, Tsurr, fixedTemp);
+      boundary(boundCond, h_conv, ems, Tsurr, fixedTemp);
 
       for (k=1; k<Nz-1; k++){
         for (j=1; j<Ny-1; j++){
@@ -92,7 +92,7 @@ void SOR(void)
     // irregular --> sphere
     while (iter < maxIter){
 
-      boundary(boundCond, h_conv, Tsurr, fixedTemp);
+      boundary(boundCond, h_conv, ems, Tsurr, fixedTemp);
 
       for (k=1; k<Nz-1; k++){
         for (j=1; j<Ny-1; j++){
@@ -158,7 +158,7 @@ void SOR(void)
       }
     }
 
-    boundary(boundCond, h_conv, Tsurr, fixedTemp);
+    boundary(boundCond, h_conv, ems, Tsurr, fixedTemp);
 
     if (iter%50 == 0){
       // calculate norm of error

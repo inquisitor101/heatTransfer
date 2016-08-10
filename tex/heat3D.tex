@@ -179,6 +179,27 @@
 	
 	
 	\subsection{Implicit Scheme} 
+	The implicit scheme is on the other hand, numerically, unconditionally stable. This gives the user flexibility of integrating such a scheme(s) without much thought on restrictions both time and space-wise with respect to the CFL condition. For this paper, the Crank-Nicolson scheme is considered. In brief terms, this scheme has the following resemblance:
+	
+	\begin{equation}
+	\frac{\partial T}{\partial t} = \theta.F^{n+1} + (1-\theta).F^{n}
+	\end{equation}
+	where $0 \le \theta \le 1$. Thus this scheme has the option of being a fully implicit ($\theta = 1$), fully explicit ($\theta = 0$) or an implicit scheme with a combination of both ($0 < \theta < 1$). For more specific expression concerning our geometry, refer to the below.
+	 
+	\subsubsection{Inner-grid Points}
+	For the inner grid, the following finite difference node expressions are utilized:
+	
+	\begin{multline}
+	\frac{T_{i,j,k}^{n+1} - T_{i,j,k}^n}{\delta t} = \\
+	\theta \bigg(  \frac{T_{i-1,j,k}^{n+1}-2T_{i,j,k}^{n+1}+T_{i+1,j,k}^{n+1}}{\delta x^2} \qquad \qquad \\
+	+ \frac{T_{i,j-1,k}^{n+1}-2T_{i,j,k}^{n+1}+T_{i,j+1,k}^{n+1}}{\delta y^2} \qquad \\
+	\qquad + \frac{T_{i,j,k-1}^{n+1}-2T_{i,j,k}^{n+1}+T_{i,j,k+1}^{n+1}}{\delta z^2} \bigg) \\
+	+ (1 - \theta) \bigg(
+	\frac{T_{i-1,j,k}^{n}-2T_{i,j,k}^{n}+T_{i+1,j,k}^{n}}{\delta x^2} \qquad \qquad \qquad \qquad \\
+	+ \frac{T_{i,j-1,k}^{n}-2T_{i,j,k}^{n}+T_{i,j+1,k}^{n}}{\delta y^2} \\
+	+ \frac{T_{i,j,k-1}^{n}-2T_{i,j,k}^{n}+T_{i,j,k+1}^{n}}{\delta z^2} \bigg)
+	\end{multline}
+	\subsubsection{Outer-grid Points}
 	
 	\section{Simulation Results}
 	

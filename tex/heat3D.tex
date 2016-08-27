@@ -207,7 +207,7 @@
 	
 	where, $A_{m,n}$ is the coefficient matrix with $m$-rows and $n$-columns, $x^{n+1}$ is the variable vector at time step $n+1$ and similarly $x^n$ is the variable vector at time step $n$.
 	
-	The general form of the system of equations, is:
+	The general form of the system of equations is shown in the matrix-vector expression below, in the middle of this page.
 	% -------------------------------------------------------
 
 	\begin{strip}
@@ -241,6 +241,26 @@
 	\end{strip}
 	% -------------------------------------------------------	
 	With the exception that the involved system of equations will result in a very sparse matrix, certain storage and solver capabilities must take advantage of this sparsity. In the meantime, as mentioned earlier, the whole system will be properly set-up. It will entail all the inner-grid and outer-grid points and hence will encompass all conditions taking place (boundary and source generation). 
+	
+	Following similar reasoning as depicted in the explicit scheme however with the Crank-Nicolson scheme, the inner grid points' expression will be formulated below. 
+	
+	\begin{multline}
+	\frac{T_{i,j,k}^{n+1} - T_{i,j,k}^n}{\delta t} = \\
+	\theta \bigg( \frac{\partial^2 T^{n+1}}{\partial x^2}
+	+ \frac{\partial^2 T^{n+1}}{\partial y^2}
+	+ \frac{\partial^2 T^{n+1}}{\partial z^2} \bigg) \\
+	+ (1 - \theta) \bigg(
+	\frac{\partial^2 T^{n}}{\partial x^2}
+	+ \frac{\partial^2 T^{n}}{\partial y^2}
+	+ \frac{\partial^2 T^{n}}{\partial z^2} \bigg)
+	\end{multline}
+	with each of the partial derivatives having an expression of:
+	$$\frac{\partial^2 T^{n+1}}{\partial x^2}=\frac{T_{i-1,j,k}^{n+1}-2T_{i,j,k}^{n+1}+T_{i+1,j,k}^{n+1}}{\delta x^2} $$
+	$$\frac{\partial^2 T^{n+1}}{\partial y^2}= \frac{T_{i,j-1,k}^{n+1}-2T_{i,j,k}^{n+1}+T_{i,j+1,k}^{n+1}}{\delta y^2}$$
+	$$\frac{\partial^2 T^{n+1}}{\partial z^2}= \frac{T_{i,j,k-1}^{n+1}-2T_{i,j,k}^{n+1}+T_{i,j,k+1}^{n+1}}{\delta z^2}$$
+	$$\frac{\partial^2 T^{n}}{\partial x^2}= \frac{T_{i-1,j,k}^{n}-2T_{i,j,k}^{n}+T_{i+1,j,k}^{n}}{\delta x^2}$$
+	$$\frac{\partial^2 T^{n}}{\partial y^2}= \frac{T_{i,j-1,k}^{n}-2T_{i,j,k}^{n}+T_{i,j+1,k}^{n}}{\delta y^2}$$
+	$$\frac{\partial^2 T^{n}}{\partial z^2}= \frac{T_{i,j,k-1}^{n}-2T_{i,j,k}^{n}+T_{i,j,k+1}^{n}}{\delta z^2}$$
 	
 	\section{Simulation Results}
 	

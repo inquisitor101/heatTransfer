@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.6.6)  13 AUG 2016 14:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2016.6.6)  27 AUG 2016 20:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -762,19 +762,23 @@ LaTeX Font Info:    Calculating math sizes for size <11> on input line 47.
 
 
 ] [2]
-Extra height:0.0pt when 357.99225pt
-(2)Left:357.99225pt Right:324.91335pt Output:357.99225pt
+Extra height:0.0pt when 363.99225pt
+(2)Left:363.99225pt Right:336.91335pt Output:363.99225pt
 - LAST -
-Left:357.99225pt
-Right:324.91335pt
-Output:357.99225pt
- [3
+Left:363.99225pt
+Right:336.91335pt
+Output:363.99225pt
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3]
+[4
 
 ] (./heat3D.aux) ) 
 Here is how much of TeX's memory you used:
  15504 strings out of 493029
  309087 string characters out of 6136235
- 341628 words of memory out of 5000000
+ 342628 words of memory out of 5000000
  18909 multiletter control sequences out of 15000+600000
  43369 words of font info for 94 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
@@ -795,10 +799,10 @@ sy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
 xlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/
 urw/times/utmri8a.pfb>
-Output written on heat3D.pdf (3 pages, 163293 bytes).
+Output written on heat3D.pdf (4 pages, 165187 bytes).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
- 57 compressed objects within 1 object stream
+ 82 PDF objects out of 1000 (max. 8388607)
+ 59 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
